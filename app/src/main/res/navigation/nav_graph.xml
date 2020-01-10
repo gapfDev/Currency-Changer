@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/changerFragment">
+
+    <fragment
+        android:id="@+id/changerFragment"
+        android:name="com.alxdev.two.moneychanger.ui.changer.ChangerFragment"
+        android:label="fragment_changer"
+        tools:layout="@layout/fragment_changer" />
+</navigation>

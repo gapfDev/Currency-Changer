@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.alxdev.two.moneychanger.ui.changer.ChangerViewModel" />
+
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerManager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorAccent">
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="@dimen/smallMargin" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineRigth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="@dimen/smallMargin" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="@dimen/smallMargin" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/localConstrain"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@android:color/darker_gray"
+            android:padding="@dimen/smallPadding"
+            app:layout_constraintEnd_toStartOf="@+id/guidelineRigth"
+            app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+            app:layout_constraintTop_toTopOf="@+id/guidelineTop">
+
+            <TextView
+                android:id="@+id/localTextView"
+                style="@style/xl_bold_style"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/local"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <ImageView
+                android:id="@+id/localImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mediumMargin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/localTextView"
+                app:srcCompat="@android:drawable/ic_menu_mylocation" />
+
+            <TextView
+                android:id="@+id/localTextView2"
+                style="@style/medium_bold_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/mediumMargin"
+                android:text="@string/you_are_in"
+                app:layout_constraintBottom_toBottomOf="@+id/localImageView"
+                app:layout_constraintStart_toEndOf="@+id/localImageView"
+                app:layout_constraintTop_toTopOf="@+id/localImageView" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/localSpinner"
+                style="@style/medium_bold_style"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mediumMargin"
+                android:layout_marginEnd="@dimen/mediumMargin"
+                app:currency_values="@{viewModel.usaCurrencyList}"
+                app:layout_constraintEnd_toStartOf="@+id/localEditText"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="@+id/localImageView"
+                app:layout_constraintTop_toBottomOf="@+id/localImageView"
+                tools:listitem="@android:layout/simple_spinner_item" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/localEditText"
+                style="@style/xl_bold_style"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="numberDecimal"
+                android:text="@={viewModel.localEditText}"
+                android:textAlignment="textEnd"
+                app:layout_constraintBottom_toBottomOf="@+id/localSpinner"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/foreignConstrain"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mediumMargin"
+            android:background="@color/colorPrimary"
+            android:padding="@dimen/smallPadding"
+            app:layout_constraintEnd_toStartOf="@+id/guidelineRigth"
+            app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+            app:layout_constraintTop_toBottomOf="@+id/localConstrain">
+
+            <TextView
+                android:id="@+id/foreignTextView"
+                style="@style/xl_bold_light_style"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/foreign"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <ImageView
+                android:id="@+id/foreignImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mediumMargin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/foreignTextView"
+                app:srcCompat="@android:drawable/ic_media_ff" />
+
+            <TextView
+                android:id="@+id/foreignTextView2"
+                style="@style/medium_bold_light_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/mediumMargin"
+                android:text="@string/from"
+                app:layout_constraintBottom_toBottomOf="@+id/foreignImageView"
+                app:layout_constraintStart_toEndOf="@+id/foreignImageView"
+                app:layout_constraintTop_toTopOf="@+id/foreignImageView" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/foreignSpinner"
+                style="@style/medium_bold_light_style"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mediumMargin"
+                android:layout_marginEnd="@dimen/mediumMargin"
+                app:currency_values="@{viewModel.currencyList}"
+                app:layout_constraintEnd_toStartOf="@+id/foreignEditText"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="@+id/foreignImageView"
+                app:layout_constraintTop_toBottomOf="@+id/foreignImageView"
+                app:selectedValue="@={viewModel.foreignValueSpinner}"
+                tools:listitem="@android:layout/simple_spinner_item" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/foreignEditText"
+                style="@style/large_bold_light_style"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="number"
+                android:text="@{viewModel.foreignEditText}"
+                android:textAlignment="textEnd"
+                app:layout_constraintBottom_toBottomOf="@+id/foreignSpinner"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="0.00" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/buttonContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mediumMargin"
+            android:background="@android:color/white"
+            android:padding="@dimen/smallPadding"
+            app:layout_constraintEnd_toStartOf="@+id/guidelineRigth"
+            app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+            app:layout_constraintTop_toBottomOf="@+id/foreignConstrain">
+
+            <Button
+                android:enabled="false"
+                android:id="@+id/convertButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mediumMargin"
+                android:onClick="@{()-> viewModel.onCLickSave()}"
+                android:text="@string/save"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/resltTextView" />
+
+            <TextView
+                android:id="@+id/resltTextView"
+                style="@style/medium_bold_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/smallMargin"
+                android:text="@string/your_conversion_is"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/convertButton"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/totalCurrencyTextView"
+                style="@style/xlarge_bold_accent_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.totalEditText}"
+                app:layout_constraintBottom_toBottomOf="@+id/resltTextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/resltTextView"
+                tools:text="0.0" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/currencyContainerBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="buttonContainer"
+            tools:layout_editor_absoluteY="401dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guidelineRigth"
+            app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+            app:layout_constraintTop_toBottomOf="@+id/currencyContainerBarrier"
+            tools:listitem="@layout/item_history" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

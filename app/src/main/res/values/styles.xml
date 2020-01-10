@@ -1,0 +1,50 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="large_bold_accent_style" parent="large_bold_style">
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <style name="xlarge_bold_accent_style" parent="xl_bold_style">
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <style name="base_bold_style">
+        <item name="android:textAlignment">center</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="large_bold_style" parent="base_bold_style">
+        <item name="android:textSize">@dimen/largeText</item>
+    </style>
+
+    <style name="medium_bold_style" parent="base_bold_style">
+        <item name="android:textSize">@dimen/mediumText</item>
+    </style>
+
+    <style name="xl_bold_style" parent="base_bold_style">
+        <item name="android:textSize">@dimen/xlargeText</item>
+    </style>
+
+
+    <style name="large_bold_light_style" parent="large_bold_style">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="medium_bold_light_style" parent="medium_bold_style">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="xl_bold_light_style" parent="xl_bold_style">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+</resources>

@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Money Changer</string>
+    <string name="current_location">You are in %1$s</string>
+    <string name="conversion_rate_hint">1 USD = 3500 COP</string>
+    <string name="conversion_rate">%.2f USD = %.2f COP</string>
+    <string name="date">%s</string>
+    <string name="conversion">%.1f %s to %s %.1f</string>
+    <string name="history">History</string>
+    <string name="local">Local</string>
+    <string name="you_are_in">You are in :</string>
+    <string name="foreign">Foreign</string>
+    <string name="from">From :</string>
+    <string name="save">Save</string>
+    <string name="your_conversion_is">Your conversion is :</string>
+
+</resources>

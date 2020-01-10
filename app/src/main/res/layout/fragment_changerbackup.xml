@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.alxdev.two.moneychanger.ui.changer.ChangerViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerManager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorAccent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="16dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineRigth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="16dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="16dp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/localConstrain"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            app:layout_constraintEnd_toStartOf="@+id/guidelineRigth"
+            app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+            app:layout_constraintTop_toTopOf="@+id/guidelineTop">
+
+            <TextView
+                android:id="@+id/localTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Foreign"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <ImageView
+                android:id="@+id/localImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/localTextView"
+                app:srcCompat="@android:drawable/ic_menu_mylocation" />
+
+            <TextView
+                android:id="@+id/localTextView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="You are in :"
+                app:layout_constraintBottom_toBottomOf="@+id/localImageView"
+                app:layout_constraintStart_toEndOf="@+id/localImageView"
+                app:layout_constraintTop_toTopOf="@+id/localImageView" />
+
+            <TextView
+                android:id="@+id/localTextView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="USA"
+                app:layout_constraintBottom_toBottomOf="@+id/localTextView2"
+                app:layout_constraintStart_toEndOf="@+id/localTextView2" />
+
+            <Spinner
+                android:id="@+id/localSpinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toStartOf="@+id/localEditText"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="@+id/localImageView"
+                app:layout_constraintTop_toBottomOf="@+id/localImageView" />
+
+            <EditText
+                android:id="@+id/localEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="number"
+                app:layout_constraintBottom_toBottomOf="@+id/localSpinner"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
+
+
+    <!--<androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--android:id="@+id/foreignConstrain"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginTop="16dp"-->
+    <!--android:background="@color/colorPrimary"-->
+    <!--app:layout_constraintEnd_toStartOf="@+id/guidelineRigth"-->
+    <!--app:layout_constraintStart_toStartOf="@+id/guidelineLeft"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/localConstrain">-->
+
+    <!--<TextView-->
+    <!--    android:id="@+id/foreignTextView"-->
+    <!--    android:layout_width="0dp"-->
+    <!--    android:layout_height="wrap_content"-->
+    <!--    android:text="Foreign"-->
+    <!--    app:layout_constraintEnd_toEndOf="parent"-->
+    <!--    app:layout_constraintStart_toStartOf="parent"-->
+    <!--    app:layout_constraintTop_toTopOf="parent" />-->
+
+
+    <!--<ImageView-->
+    <!--    android:id="@+id/foreignImageView"-->
+    <!--    android:layout_width="wrap_content"-->
+    <!--    android:layout_height="wrap_content"-->
+    <!--    android:layout_marginTop="16dp"-->
+    <!--    app:layout_constraintStart_toStartOf="parent"-->
+    <!--    app:layout_constraintTop_toBottomOf="@+id/foreignTextView"-->
+    <!--    app:srcCompat="@android:drawable/ic_menu_mylocation"-->
+    <!--    tools:srcCompat="@android:drawable/ic_media_ff" />-->
+
+    <!--<TextView-->
+    <!--    android:id="@+id/foreignTextView2"-->
+    <!--    android:layout_width="wrap_content"-->
+    <!--    android:layout_height="wrap_content"-->
+    <!--    android:layout_marginStart="16dp"-->
+    <!--    android:text="To :"-->
+    <!--    app:layout_constraintBottom_toBottomOf="@+id/foreignImageView"-->
+    <!--    app:layout_constraintStart_toEndOf="@+id/foreignImageView"-->
+    <!--    app:layout_constraintTop_toTopOf="@+id/foreignImageView" />-->
+
+    <!--<Spinner-->
+    <!--    android:id="@+id/foreignSpinner"-->
+    <!--    android:layout_width="0dp"-->
+    <!--    android:layout_height="wrap_content"-->
+    <!--    android:layout_marginTop="32dp"-->
+    <!--    android:layout_marginEnd="16dp"-->
+    <!--    app:layout_constraintEnd_toStartOf="@+id/foreignEditText"-->
+    <!--    app:layout_constraintHorizontal_bias="0.5"-->
+    <!--    app:layout_constraintHorizontal_chainStyle="spread_inside"-->
+    <!--    app:layout_constraintStart_toStartOf="@+id/foreignImageView"-->
+    <!--    app:layout_constraintTop_toBottomOf="@+id/foreignImageView" />-->
+
+    <!--<EditText-->
+    <!--    android:id="@+id/foreignEditText"-->
+    <!--    android:layout_width="wrap_content"-->
+    <!--    android:layout_height="wrap_content"-->
+    <!--    android:ems="10"-->
+    <!--    android:inputType="number"-->
+    <!--    app:layout_constraintBottom_toBottomOf="@+id/foreignSpinner"-->
+    <!--    app:layout_constraintEnd_toEndOf="parent" />-->
+
+
+    <!--</androidx.constraintlayout.widget.ConstraintLayout>-->

@@ -97,30 +97,30 @@ class ChangerViewModel : ViewModel() {
                 } else {
                     Log.d("alxx", "save data >>")
                     changerRepository.saveCurrencyList(currencyListAPI)
+                    currencyCacheData()
                 }
             }
         }
 
-    private fun createCurrencyList(quotes: MutableMap<String, Double>): List<Currency> {
-        var currencyList = mutableListOf<Currency>()
-        quotes.forEach {
-            currencyList.add(
-                Currency(
-                    description = it.key,
-                    value = it.value
+    private fun createCurrencyList(quotes: MutableMap<String, Double>): List<Currency> =
+        mutableListOf<Currency>().apply {
+            quotes.forEach {
+                this.add(
+                    Currency(
+                        description = it.key,
+                        value = it.value
+                    )
                 )
-            )
+            }
         }
-        return currencyList.toList()
-    }
 
-
+    //    Work in progress
     infix fun <T> Collection<T>.deepEqualTo(other: Collection<T>): Boolean {
         return this.containsAll(other) && other.containsAll(this)
     }
 
 
-//    Work in progress
+    //    Work in progress
     private fun <T, Y> compareListEqual(list1: List<T>, list2: List<Y>): Boolean {
         if (list1.size != list2.size)
             return false
@@ -134,7 +134,7 @@ class ChangerViewModel : ViewModel() {
         return b
     }
 
-    fun onCLickSave(){
+    fun onCLickSave() {
 
     }
 

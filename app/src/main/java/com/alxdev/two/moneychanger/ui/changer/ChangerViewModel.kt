@@ -4,61 +4,49 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.alxdev.two.moneychanger.AppApplication
 import com.alxdev.two.moneychanger.data.local.entity.Currency
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ChangerViewModel : ViewModel() {
-
-    private val _usaCurrencyList = MutableLiveData<List<Currency>>().apply {
-        value = listOf(Currency(value = 1.0, description = "USA"))
-    }
-    val usaCurrencyList: LiveData<List<Currency>> = _usaCurrencyList
-
-    val localEditText = MutableLiveData<String>()
-
-    private val _currencyList = MutableLiveData<List<Currency>>().apply {
-        value = emptyList()
-    }
-    val currencyList: LiveData<List<Currency>> = _currencyList
-
-    val foreignValueSpinner = MutableLiveData<Currency>()
-
-    val foreignEditText: LiveData<String>
-        get() {
-            return Transformations.map(foreignValueSpinner) {
-                String.format("%.2f", it?.value ?: 0.0)
-            }
-        }
-
-    private val totalMediatorLiveData = MediatorLiveData<String>()
-
-    private val _totalEditText: MutableLiveData<String>
-        get() = totalMediatorLiveData
-
-    val totalEditText: LiveData<String> = _totalEditText
 
     private val changerRepository
         get() = AppApplication.changerRepository
 
+    val usaCurrencyList: List<Currency> get() = listOf(Currency(value = 1.0, description = "USA"))
+    val localEditText = MutableLiveData<String>().apply {
+        value = "1"
+    }
+
+    val foreignSpinnerValueSelected = MutableLiveData<Currency>()
+    val currencyList: LiveData<List<Currency>?> = changerRepository.getCurrencyList2()
+    val foreignEditText: LiveData<String>
+        get() {
+            return Transformations.map(foreignSpinnerValueSelected) {
+                String.format("%.2f", it?.value ?: 0.0)
+            }
+        }
+
+    private val totalMediator = MediatorLiveData<String>()
+    private val _totalEditText: MutableLiveData<String>
+        get() = totalMediator
+    val totalEditText: LiveData<String> = _totalEditText
+
     init {
-        initTotalSubscribers()
-        currencyCacheData()
+        initTotalMediators()
         initSyncCurrency()
     }
 
-    private fun initTotalSubscribers() {
-        totalMediatorLiveData.addSource(foreignValueSpinner) {
+    private fun initTotalMediators() {
+        totalMediator.addSource(foreignSpinnerValueSelected) {
             updateTotal()
         }
 
-        totalMediatorLiveData.addSource(localEditText) {
+        totalMediator.addSource(localEditText) {
             updateTotal()
         }
     }
 
     private fun updateTotal() {
-        val foreignQuantity = foreignValueSpinner.value?.value ?: 0.0
+        val foreignQuantity = foreignSpinnerValueSelected.value?.value ?: 0.0
         val localQuantity = localEditText.value.takeUnless {
             it.isNullOrBlank()
         }?.toDouble() ?: 0.0
@@ -66,41 +54,21 @@ class ChangerViewModel : ViewModel() {
         _totalEditText.value = String.format("%.2f", localQuantity * foreignQuantity)
     }
 
-    private fun currencyCacheData() {
-        viewModelScope.launch {
-            _currencyList.value = changerRepository.getCurrencyList()
-        }
-    }
-
     private fun initSyncCurrency() {
         viewModelScope.launch {
+            Log.i("alxxt", "class 0 - ${Thread.currentThread().name}")
 
-            changerRepository.getCurrencyAPI()?.quotes?.takeUnless {
-                it.isNullOrEmpty()
+            changerRepository.getCurrencyAPI()?.quotes?.takeIf {
+                it.isNotEmpty()
             }?.let { _map ->
                 createCurrencyList(_map).takeUnless {
                     it.isNullOrEmpty()
                 }?.let { _currencyListAPI ->
-                    checkToSaveCurrency(_currencyListAPI)
+                    changerRepository.insertCurrencyList(_currencyListAPI)
                 }
             }
         }
     }
-
-    private suspend fun checkToSaveCurrency(currencyListAPI: List<Currency>) =
-        withContext(Dispatchers.IO) {
-
-            currencyList.value?.let { _currentList ->
-                //                if (_currentList.deepEqualTo(currencyListAPI)) {
-                if (compareListEqual(_currentList, currencyListAPI)) {
-                    Log.d("alxx", "DO not save data <<>>")
-                } else {
-                    Log.d("alxx", "save data >>")
-                    changerRepository.saveCurrencyList(currencyListAPI)
-                    currencyCacheData()
-                }
-            }
-        }
 
     private fun createCurrencyList(quotes: MutableMap<String, Double>): List<Currency> =
         mutableListOf<Currency>().apply {
@@ -114,11 +82,15 @@ class ChangerViewModel : ViewModel() {
             }
         }
 
+    fun <T> Collection<T>.isCurrencyEqual(newCurrencyList: Collection<T>): Boolean {
+
+        return false
+    }
+
     //    Work in progress
     infix fun <T> Collection<T>.deepEqualTo(other: Collection<T>): Boolean {
         return this.containsAll(other) && other.containsAll(this)
     }
-
 
     //    Work in progress
     private fun <T, Y> compareListEqual(list1: List<T>, list2: List<Y>): Boolean {

@@ -166,7 +166,7 @@
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
                 app:layout_constraintStart_toStartOf="@+id/foreignImageView"
                 app:layout_constraintTop_toBottomOf="@+id/foreignImageView"
-                app:selectedValue="@={viewModel.foreignValueSpinner}"
+                app:selectedValue="@={viewModel.foreignSpinnerValueSelected}"
                 tools:listitem="@android:layout/simple_spinner_item" />
 
             <androidx.appcompat.widget.AppCompatTextView

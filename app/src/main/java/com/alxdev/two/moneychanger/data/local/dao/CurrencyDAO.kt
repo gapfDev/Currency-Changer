@@ -10,6 +10,9 @@ interface CurrencyDao {
     @Insert
     fun insert(currency: Currency)
 
+    @Insert
+    fun insertCurrencyList(currencyList: List<Currency>)
+
     @Update
     fun update(currency: Currency)
 
@@ -20,14 +23,14 @@ interface CurrencyDao {
     fun clear()
 
     @Query("SELECT * FROM " + Currency.TABLE_NAME)
-    fun getAll(): LiveData<List<Currency>?>
+    fun getAllLiveData(): LiveData<List<Currency>?>
 
     @Query("SELECT * FROM " + Currency.TABLE_NAME)
-    fun getAllLite(): List<Currency>?
+    fun getAll(): List<Currency>?
 
     @Query("SELECT * FROM ${Currency.TABLE_NAME} LIMIT 1 ")
-    fun getCoin(): Currency?
+    fun getCurrency(): Currency?
 
     @Query("SELECT * FROM ${Currency.TABLE_NAME} LIMIT 1 ")
-    fun getCoinLive(): LiveData<Currency?>
+    fun getCurrencyLD(): LiveData<Currency?>
 }

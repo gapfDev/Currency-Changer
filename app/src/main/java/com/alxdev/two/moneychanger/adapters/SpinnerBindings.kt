@@ -16,7 +16,11 @@ import com.alxdev.two.moneychanger.data.local.entity.Currency
 fun setCurrencyValues(appCompatSpinner: AppCompatSpinner, currencyList: List<Currency>?) {
     Log.i("alxx", "${currencyList?.size ?: 0}")
     val adapter =
-        ArrayAdapter(appCompatSpinner.context, R.layout.spinner_item, currencyList ?: emptyList())
+        ArrayAdapter(
+            appCompatSpinner.context,
+            R.layout.spinner_item,
+            currencyList ?: listOf(Currency(value = 1.0, description = "USA"))
+        )
     adapter.setDropDownViewResource(R.layout.spinner_item)
 
     appCompatSpinner.apply {

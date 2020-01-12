@@ -30,6 +30,9 @@ class ChangerViewModel : ViewModel() {
         get() = totalMediator
     val totalEditText: LiveData<String> = _totalEditText
 
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage = _errorMessage
+
     init {
         initTotalMediators()
         initSyncCurrency()
@@ -57,15 +60,20 @@ class ChangerViewModel : ViewModel() {
     private fun initSyncCurrency() {
         viewModelScope.launch {
             Log.i("alxxt", "class 0 - ${Thread.currentThread().name}")
-
-            changerRepository.getCurrencyAPI()?.quotes?.takeIf {
-                it.isNotEmpty()
-            }?.let { _map ->
-                createCurrencyList(_map).takeUnless {
-                    it.isNullOrEmpty()
-                }?.let { _currencyListAPI ->
-                    changerRepository.insertCurrencyList(_currencyListAPI)
+            try {
+                changerRepository.getCurrencyAPI()?.quotes?.takeIf {
+                    it.isNotEmpty()
+                }?.let { _map ->
+                    createCurrencyList(_map).takeUnless {
+                        it.isNullOrEmpty()
+                    }?.let { _currencyListAPI ->
+                        changerRepository.insertCurrencyList(_currencyListAPI)
+                    }
                 }
+            } catch (e: Exception) {
+                Log.e("alxxE", e.toString())
+                _errorMessage.value =
+                    "Sorry we are having problems, please check internet connection."
             }
         }
     }

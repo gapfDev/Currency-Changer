@@ -3,6 +3,7 @@ package com.alxdev.two.moneychanger.data.remote
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -30,4 +31,7 @@ class RetrofitBuild(baseURL: String) {
 interface CurrencyAPIService {
     @GET("live")
     suspend fun getCurrency(@Query("access_key") accessKey: String): CurrencyDTO
+
+    @GET("live")
+    fun getCurrencyResult(@Query("access_key") accessKey: String): Call<CurrencyDTO>
 }

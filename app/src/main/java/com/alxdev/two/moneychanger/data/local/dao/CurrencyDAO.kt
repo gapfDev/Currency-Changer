@@ -11,7 +11,7 @@ interface CurrencyDao {
     fun insert(currency: Currency)
 
     @Insert
-    fun insertCurrencyList(currencyList: List<Currency>)
+    fun saveCurrencyList(currencyList: List<Currency>)
 
     @Update
     fun update(currency: Currency)

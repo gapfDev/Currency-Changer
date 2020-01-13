@@ -108,7 +108,6 @@
                 app:layout_constraintBottom_toBottomOf="@+id/localSpinner"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -197,11 +196,11 @@
             app:layout_constraintTop_toBottomOf="@+id/foreignConstrain">
 
             <Button
-                android:enabled="false"
                 android:id="@+id/convertButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/mediumMargin"
+                android:enabled="false"
                 android:onClick="@{()-> viewModel.onCLickSave()}"
                 android:text="@string/save"
                 app:layout_constraintEnd_toEndOf="parent"

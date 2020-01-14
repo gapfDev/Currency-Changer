@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.alxdev.two.moneychanger.AppApplication
 import com.alxdev.two.moneychanger.data.local.entity.Currency
+import com.alxdev.two.moneychanger.data.local.entity.History
+import com.alxdev.two.moneychanger.data.toCurrencyFormat
 import kotlinx.coroutines.launch
 
 class ChangerViewModel : ViewModel() {
@@ -11,13 +13,14 @@ class ChangerViewModel : ViewModel() {
     private val changerRepository
         get() = AppApplication.changerRepository
 
-    val usaCurrencyList: List<Currency> get() = listOf(Currency(value = 1.0, description = "USA"))
+    val localSpinnerValueSelected = MutableLiveData<Currency>()
+    val localCurrencyList: List<Currency> get() = listOf(Currency(value = 1.0, description = "USA"))
     val localEditText = MutableLiveData<String>().apply {
         value = "1"
     }
 
     val foreignSpinnerValueSelected = MutableLiveData<Currency>()
-    val currencyList: LiveData<List<Currency>?> = changerRepository.getCurrencyListLive()
+    val foreignCurrencyList: LiveData<List<Currency>?> = changerRepository.getCurrencyListLive()
     val foreignEditText: LiveData<String>
         get() {
             return Transformations.map(foreignSpinnerValueSelected) {
@@ -32,6 +35,8 @@ class ChangerViewModel : ViewModel() {
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage = _errorMessage
+
+    val historyChange: LiveData<List<History>?> = changerRepository.getHistoryListLive()
 
     init {
         initTotalMediators()
@@ -54,7 +59,7 @@ class ChangerViewModel : ViewModel() {
             it.isNullOrBlank()
         }?.toDouble() ?: 0.0
 
-        _totalEditText.value = String.format("%.2f", localQuantity * foreignQuantity)
+        _totalEditText.value = (foreignQuantity * localQuantity).toCurrencyFormat()
     }
 
     private fun initSyncCurrency() {
@@ -64,5 +69,34 @@ class ChangerViewModel : ViewModel() {
         }
     }
 
-    fun onCLickSave(){}
+    fun onCLickSave() {
+
+        changerRepository.saveHistory(getCurrencyChangeInformation())
+    }
+
+    private fun getCurrencyChangeInformation(): CurrencyInformation {
+        val foreignCurrencyQuantity = foreignSpinnerValueSelected.value?.value ?: 0.0
+        val localCurrencyQuantity = localEditText.value.takeUnless {
+            it.isNullOrBlank()
+        }?.toDouble() ?: 0.0
+
+        val localCountry =
+            localSpinnerValueSelected.value?.description ?: localCurrencyList[0].description
+        val foreignCountry =
+            foreignSpinnerValueSelected.value?.description ?: localCurrencyList[0].description
+
+        return CurrencyInformation(
+            localCountry,
+            foreignCountry,
+            localCurrencyQuantity,
+            foreignCurrencyQuantity
+        )
+    }
 }
+
+class CurrencyInformation(
+    val localCountry: String,
+    val foreignCountry: String,
+    val localCurrencyQuantity: Double,
+    val foreignCurrencyQuantity: Double
+)

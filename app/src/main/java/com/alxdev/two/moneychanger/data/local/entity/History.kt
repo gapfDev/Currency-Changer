@@ -1,31 +1,34 @@
 package com.alxdev.two.moneychanger.data.local.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import java.util.*
 
-@Entity(tableName = History.TABLE_NAME,
-    foreignKeys = [
-        ForeignKey(entity = Currency::class, parentColumns = arrayOf("id"), childColumns = arrayOf("currencyFrom"), onDelete = ForeignKey.NO_ACTION),
-        ForeignKey(entity = Currency::class, parentColumns = arrayOf("id"), childColumns = arrayOf("currencyTo"), onDelete = ForeignKey.NO_ACTION)]
-)
-class History (
+@Entity(tableName = History.TABLE_NAME)
+class History(
 
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val date: Date,
-    val currencyFrom:Int,
-    val currencyTo:Int,
-    val valueFrom : Double,
-    val valueTo: Double
+    val id: Long = 0L,
+
+//    val date: Date = Date(),
+
+    @ColumnInfo(name = "local_country")
+    val localCountry: String,
+
+    @ColumnInfo(name = "foreign_country")
+    val foreignCountry: String,
+
+    @ColumnInfo(name = "local_currency_quantity")
+    val localCurrencyQuantity: Double,
+
+    @ColumnInfo(name = "foreign_currency_quantity")
+    val foreignCurrencyQuantity: Double
 ) {
 
-    companion object{
-        const val  TABLE_NAME = "history"
+    companion object {
+        const val TABLE_NAME = "history"
     }
 
-    override fun toString(): String {
-        return valueTo.toString()
-    }
 }

@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.alxdev.two.moneychanger.adapters.IRecyclerViewAdapter
 import com.alxdev.two.moneychanger.databinding.FragmentChangerBinding
 
 
@@ -28,20 +29,21 @@ class ChangerFragment : Fragment() {
             lifecycleOwner = this@ChangerFragment.viewLifecycleOwner
             viewModel = changerViewModel
         }
-
-        initViewModelSubscribers()
-
         return viewDataBinding.root
     }
 
-    private fun initViewModelSubscribers() {
-        viewDataBinding.viewModel?.errorMessage?.observe(this,
-            Observer<String>() {
-                userErrorMessage(it)
-            })
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initRecycleViewAdapter()
     }
 
-    private fun userErrorMessage(errorMessage: String?) {
-        Toast.makeText(this.context, errorMessage, Toast.LENGTH_LONG).show()
+    private fun initRecycleViewAdapter() {
+        viewDataBinding.viewModel?.let {
+            val adapter = IRecyclerViewAdapter()
+            viewDataBinding.historyRecycleView.apply {
+                this.adapter = adapter
+            }
+        }
+
     }
 }

@@ -5,12 +5,15 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.alxdev.two.moneychanger.data.local.dao.CurrencyDao
+import com.alxdev.two.moneychanger.data.local.dao.HistoryDao
 import com.alxdev.two.moneychanger.data.local.entity.Currency
+import com.alxdev.two.moneychanger.data.local.entity.History
 
-@Database(entities = [Currency::class], version = 1, exportSchema = false)
+@Database(entities = [Currency::class, History::class], version = 3, exportSchema = false)
 abstract class MoneyChangerDataBase : RoomDatabase() {
 
     abstract val currencyDAO: CurrencyDao
+    abstract val historyDao: HistoryDao
 
     companion object {
 

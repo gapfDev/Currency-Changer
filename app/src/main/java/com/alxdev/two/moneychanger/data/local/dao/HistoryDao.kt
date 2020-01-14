@@ -13,12 +13,12 @@ interface HistoryDao {
     @Update
     fun update(vararg history: History)
 
-    @Query("SELECT * FROM " + History.TABLE_NAME +" WHERE id = :id")
+    @Query("SELECT * FROM " + History.TABLE_NAME + " WHERE id = :id")
     fun findById(id: Int): History
 
     @Delete
     fun delete(vararg history: History)
 
     @Query("SELECT * FROM " + History.TABLE_NAME)
-    fun getAll(): LiveData<List<History>>
+    fun getAllLiveData(): LiveData<List<History>?>
 }

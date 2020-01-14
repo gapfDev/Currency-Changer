@@ -5,8 +5,10 @@ import androidx.lifecycle.LiveData
 import com.alxdev.two.moneychanger.AppApplication
 import com.alxdev.two.moneychanger.data.local.MoneyChangerDataBase
 import com.alxdev.two.moneychanger.data.local.entity.Currency
+import com.alxdev.two.moneychanger.data.local.entity.History
 import com.alxdev.two.moneychanger.data.remote.Constants
 import com.alxdev.two.moneychanger.data.remote.CurrencyAPIService
+import com.alxdev.two.moneychanger.ui.changer.CurrencyInformation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -95,4 +97,26 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
             moneyChangerDataBase.currencyDAO.getAllLiveData()
         }
     }
+
+    fun getHistoryListLive(): LiveData<List<History>?> = runBlocking {
+        Log.i("alxxt", "class 00 GET LIVE HISTORY - ${Thread.currentThread().name}")
+        withContext(Dispatchers.IO) {
+            Log.i("alxxt", "class 00_0 GET LIVE HISTORY- ${Thread.currentThread().name}")
+            moneyChangerDataBase.historyDao.getAllLiveData()
+        }
+
+    }
+
+    fun saveHistory(currencyInformation: CurrencyInformation) = runBlocking {
+        withContext(Dispatchers.IO) {
+            moneyChangerDataBase.historyDao.insert(currencyInformation.toHistory())
+        }
+    }
+
+    private fun CurrencyInformation.toHistory() = History(
+        localCountry = localCountry,
+        foreignCountry = foreignCountry,
+        localCurrencyQuantity = localCurrencyQuantity,
+        foreignCurrencyQuantity = foreignCurrencyQuantity
+    )
 }

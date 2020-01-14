@@ -88,7 +88,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/mediumMargin"
                 android:layout_marginEnd="@dimen/mediumMargin"
-                app:currency_values="@{viewModel.usaCurrencyList}"
+                app:selectedValue="@={viewModel.localSpinnerValueSelected}"
+                app:currency_values="@{viewModel.localCurrencyList}"
                 app:layout_constraintEnd_toStartOf="@+id/localEditText"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
@@ -159,7 +160,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/mediumMargin"
                 android:layout_marginEnd="@dimen/mediumMargin"
-                app:currency_values="@{viewModel.currencyList}"
+                app:currency_values="@{viewModel.foreignCurrencyList}"
                 app:layout_constraintEnd_toStartOf="@+id/foreignEditText"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
@@ -200,7 +201,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/mediumMargin"
-                android:enabled="false"
                 android:onClick="@{()-> viewModel.onCLickSave()}"
                 android:text="@string/save"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -239,6 +239,7 @@
             tools:layout_editor_absoluteY="401dp" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/historyRecycleView"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
@@ -248,6 +249,7 @@
             app:layout_constraintEnd_toStartOf="@+id/guidelineRigth"
             app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
             app:layout_constraintTop_toBottomOf="@+id/currencyContainerBarrier"
+            app:bind_item_data ="@{viewModel.historyChange}"
             tools:listitem="@layout/item_history" />
 
 

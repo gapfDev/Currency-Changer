@@ -2,9 +2,9 @@ package com.alxdev.two.moneychanger.data.local.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import java.util.*
+import com.alxdev.two.moneychanger.data.toCurrencyFormat
 
 @Entity(tableName = History.TABLE_NAME)
 class History(
@@ -31,4 +31,12 @@ class History(
         const val TABLE_NAME = "history"
     }
 
+    @Ignore
+    fun totalCurrencyChange(): String {
+        val localQuantity = localCurrencyQuantity.toCurrencyFormat()
+        val foreignQuantity = foreignCurrencyQuantity.toCurrencyFormat()
+        val total =
+            (localCurrencyQuantity * foreignCurrencyQuantity).toCurrencyFormat()
+        return "Local country : ${localCountry} \r\nCurrency Quantity = $localQuantity \r\nForeign Country : ${foreignCountry} \r\nCurrency Quantity = $foreignQuantity \r\nConversion : $total"
+    }
 }

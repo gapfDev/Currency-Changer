@@ -13,8 +13,8 @@ data class CurrencyDTO(
 
     fun getQuotesList(): List<Currency> =
         mutableListOf<Currency>().apply {
-            quotes.takeIf {
-                it.isNotEmpty()
+            quotes.takeUnless {
+                it.isNullOrEmpty()
             }?.let { _quotes ->
                 _quotes.forEach {
                     this.add(

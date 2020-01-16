@@ -1,8 +1,11 @@
 package com.alxdev.two.moneychanger.ui.changer
 
 import android.util.Log
+import android.view.View
+import android.widget.TextView
 import androidx.lifecycle.*
 import com.alxdev.two.moneychanger.AppApplication
+import com.alxdev.two.moneychanger.R
 import com.alxdev.two.moneychanger.data.local.entity.Currency
 import com.alxdev.two.moneychanger.data.local.entity.History
 import com.alxdev.two.moneychanger.data.toCurrencyFormat
@@ -70,8 +73,15 @@ class ChangerViewModel : ViewModel() {
     }
 
     fun onCLickSave() {
-
         changerRepository.saveHistory(getCurrencyChangeInformation())
+    }
+
+    fun onHistoryItemCLick(view: View, valor : String) {
+        if (view.id == R.id.data_up) {
+            Log.i("alxxC", "UP -- $valor")
+        } else if (view.id == R.id.imgDetailHistory) {
+            Log.i("alxxC", "Detail -- $valor")
+        }
     }
 
     private fun getCurrencyChangeInformation(): CurrencyInformation {
@@ -100,3 +110,5 @@ class CurrencyInformation(
     val localCurrencyQuantity: Double,
     val foreignCurrencyQuantity: Double
 )
+
+class HistoryItemViewModel(val itemText: String)

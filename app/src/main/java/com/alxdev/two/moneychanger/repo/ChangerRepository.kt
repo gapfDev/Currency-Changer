@@ -90,28 +90,20 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
         moneyChangerDataBase.currencyDAO.getAll()
     } ?: emptyList()
 
-    fun getCurrencyListLive(): LiveData<List<Currency>?> = runBlocking {
+    fun getCurrencyListLive(): LiveData<List<Currency>?> {
         Log.i("alxxt", "class 00 GET LIVE - ${Thread.currentThread().name}")
-        withContext(Dispatchers.IO) {
-            Log.i("alxxt", "class 00_0 GET LIVE - ${Thread.currentThread().name}")
-            moneyChangerDataBase.currencyDAO.getAllLiveData()
-        }
+        return moneyChangerDataBase.currencyDAO.getAllLiveData()
     }
 
-    fun getHistoryListLive(): LiveData<List<History>?> = runBlocking {
-        Log.i("alxxt", "class 00 GET LIVE HISTORY - ${Thread.currentThread().name}")
-        withContext(Dispatchers.IO) {
-            Log.i("alxxt", "class 00_0 GET LIVE HISTORY- ${Thread.currentThread().name}")
-            moneyChangerDataBase.historyDao.getAllLiveData()
-        }
-
+    fun getHistoryListLive(): LiveData<List<History>?> {
+        Log.i("alxxt", "class 00_0 GET LIVE HISTORY- ${Thread.currentThread().name}")
+        return moneyChangerDataBase.historyDao.getAllLiveData()
     }
 
-    fun saveHistory(currencyInformation: CurrencyInformation) = runBlocking {
+    suspend fun saveHistory(currencyInformation: CurrencyInformation) =
         withContext(Dispatchers.IO) {
             moneyChangerDataBase.historyDao.insert(currencyInformation.toHistory())
         }
-    }
 
     private fun CurrencyInformation.toHistory() = History(
         localCountry = localCountry,

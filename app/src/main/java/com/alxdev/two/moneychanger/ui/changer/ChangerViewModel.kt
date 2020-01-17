@@ -2,7 +2,6 @@ package com.alxdev.two.moneychanger.ui.changer
 
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import androidx.lifecycle.*
 import com.alxdev.two.moneychanger.AppApplication
 import com.alxdev.two.moneychanger.R
@@ -73,10 +72,12 @@ class ChangerViewModel : ViewModel() {
     }
 
     fun onCLickSave() {
-        changerRepository.saveHistory(getCurrencyChangeInformation())
+        viewModelScope.launch {
+            changerRepository.saveHistory(getCurrencyChangeInformation())
+        }
     }
 
-    fun onHistoryItemCLick(view: View, valor : String) {
+    fun onHistoryItemCLick(view: View, valor: String) {
         if (view.id == R.id.data_up) {
             Log.i("alxxC", "UP -- $valor")
         } else if (view.id == R.id.imgDetailHistory) {

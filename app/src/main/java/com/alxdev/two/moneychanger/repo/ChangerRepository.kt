@@ -8,12 +8,12 @@ import com.alxdev.two.moneychanger.data.local.entity.Currency
 import com.alxdev.two.moneychanger.data.local.entity.History
 import com.alxdev.two.moneychanger.data.remote.Constants
 import com.alxdev.two.moneychanger.data.remote.CurrencyAPIService
+import com.alxdev.two.moneychanger.data.remote.CurrencyCountryAPIService
 import com.alxdev.two.moneychanger.ui.changer.CurrencyInformation
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import ru.gildor.coroutines.retrofit.Result
 import ru.gildor.coroutines.retrofit.awaitResult
+import java.lang.Exception
 
 class ChangerRepository private constructor(private val moneyChangerDataBase: MoneyChangerDataBase) {
 
@@ -39,12 +39,18 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
     }
 
     private val client: CurrencyAPIService by lazy {
-        AppApplication.retrofitBuild.retrofit.create(
+        AppApplication.currencyListRetrofitBuild.retrofit.create(
             CurrencyAPIService::class.java
         )
     }
 
-    suspend fun getCurrencyAPI() = withContext(Dispatchers.IO) {
+    private val countryClient: CurrencyCountryAPIService by lazy {
+        AppApplication.currencyCountryRetrofitBuild.retrofit.create(
+            CurrencyCountryAPIService::class.java
+        )
+    }
+
+    suspend fun getCurrencyAPI() {
         client.getCurrency(Constants.Key.ACCESS_KEY)
     }
 
@@ -90,24 +96,95 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
         moneyChangerDataBase.currencyDAO.getAll()
     } ?: emptyList()
 
-    fun getCurrencyListLive(): LiveData<List<Currency>?> = runBlocking {
+    fun getCurrencyListLive(): LiveData<List<Currency>?> {
         Log.i("alxxt", "class 00 GET LIVE - ${Thread.currentThread().name}")
-        withContext(Dispatchers.IO) {
-            Log.i("alxxt", "class 00_0 GET LIVE - ${Thread.currentThread().name}")
-            moneyChangerDataBase.currencyDAO.getAllLiveData()
-        }
+        return moneyChangerDataBase.currencyDAO.getAllLiveData()
     }
 
-    fun getHistoryListLive(): LiveData<List<History>?> = runBlocking {
-        Log.i("alxxt", "class 00 GET LIVE HISTORY - ${Thread.currentThread().name}")
-        withContext(Dispatchers.IO) {
-            Log.i("alxxt", "class 00_0 GET LIVE HISTORY- ${Thread.currentThread().name}")
-            moneyChangerDataBase.historyDao.getAllLiveData()
+
+    suspend fun getCurrencyListV2() = withContext(Dispatchers.IO) {
+        Log.i("alxxt", "class 00 GET V2 START == - ${Thread.currentThread().name}")
+        val list = moneyChangerDataBase.currencyDAO.getAll()
+        val jobs = mutableListOf<Job>()
+        val sup = SupervisorJob()
+        val handler = CoroutineExceptionHandler { _, exception ->
+            println("Caught $exception")
+        }
+
+        try {
+
+//            supervisorScope {
+//            coroutineScope {
+            list?.let { _list ->
+                for ((index, item) in _list.withIndex()) {
+                    if (index < 5) {
+
+                        jobs += launch {
+                            val currencyName = item.description.replace("USD", "")
+
+                            if (index == 1)
+                                throw Exception("Test alxx")
+                            Log.i(
+                                "alxxt",
+                                "class 00_0 GET CURRENCY_COUNTRY START == $currencyName - ${Thread.currentThread().name}"
+                            )
+                            currencyCountryInfo(currencyName)
+                            Log.i(
+                                "alxxt",
+                                "class 00_0 GET CURRENCY_COUNTRY END == $currencyName - ${Thread.currentThread().name}"
+                            )
+                        }
+                    }
+                }
+//                }
+            }
+
+
+            jobs.forEach {
+                it.join()
+            }
+
+
+        } catch (e: Exception) {
+            Log.i("alxxE", e.toString())
+        }
+
+        Log.i("alxxt", "class 00 GET V2 FINISH == - ${Thread.currentThread().name}")
+    }
+
+
+    private suspend fun currencyCountryInfo(currencyName: String) = withContext(Dispatchers.IO) {
+
+        delay(5_000)
+        when (val result = countryClient.getCountryByCurrencyName(currencyName).awaitResult()) {
+            is Result.Ok -> {
+                Log.i(
+                    "alxxt",
+                    "class 000_0 call API > OK ${result.value[0].name} - ${Thread.currentThread().name}"
+                )
+            }
+            is Result.Error -> {
+                Log.i(
+                    "alxxt",
+                    "class 000_0 call API > ERROR ${result.exception} - ${Thread.currentThread().name}"
+                )
+            }
+            is Result.Exception -> {
+                Log.i(
+                    "alxxt",
+                    "class 000_0 call API > EXCEPTION ${result.exception} - ${Thread.currentThread().name}"
+                )
+            }
         }
 
     }
 
-    fun saveHistory(currencyInformation: CurrencyInformation) = runBlocking {
+    fun getHistoryListLive(): LiveData<List<History>?> {
+        Log.i("alxxt", "class 00_0 GET LIVE HISTORY- ${Thread.currentThread().name}")
+        return moneyChangerDataBase.historyDao.getAllLiveData()
+    }
+
+    suspend fun saveHistory(currencyInformation: CurrencyInformation) {
         withContext(Dispatchers.IO) {
             moneyChangerDataBase.historyDao.insert(currencyInformation.toHistory())
         }
@@ -119,4 +196,19 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
         localCurrencyQuantity = localCurrencyQuantity,
         foreignCurrencyQuantity = foreignCurrencyQuantity
     )
+}
+
+object Coroutines {
+    fun io(work: suspend (() -> Unit)): Job =
+        CoroutineScope(Dispatchers.IO).launch {
+            work()
+        }
+
+    fun <T : Any> ioThenMain(work: suspend (() -> T?), callback: ((T?) -> Unit)): Job =
+        CoroutineScope(Dispatchers.Main).launch {
+            val data = CoroutineScope(Dispatchers.IO).async rt@{
+                return@rt work()
+            }.await()
+            callback(data)
+        }
 }

@@ -19,9 +19,14 @@ class AppApplication : Application() {
             return instance!!.applicationContext
         }
 
-        val retrofitBuild: RetrofitBuild
+        val currencyListRetrofitBuild: RetrofitBuild
             get() = RetrofitBuild(
                 Constants.API.BASE_URL
+            )
+
+        val currencyCountryRetrofitBuild: RetrofitBuild
+            get() = RetrofitBuild(
+                Constants.API.COUNTRY_BASE_URL
             )
 
         private val moneyChangerDataBase

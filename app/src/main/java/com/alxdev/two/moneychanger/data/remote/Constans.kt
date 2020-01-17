@@ -7,5 +7,6 @@ object Constants {
 
     object API{
         const val BASE_URL = "http://www.apilayer.net/api/"
+        const val COUNTRY_BASE_URL = "https://restcountries.eu/"
     }
 }

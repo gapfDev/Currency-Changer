@@ -1,4 +1,4 @@
-package com.alxdev.two.moneychanger.data.remote
+package com.alxdev.two.moneychanger.data.remote.currency
 
 import com.alxdev.two.moneychanger.data.local.entity.Currency
 

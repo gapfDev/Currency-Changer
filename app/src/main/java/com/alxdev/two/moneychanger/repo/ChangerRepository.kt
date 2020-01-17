@@ -13,7 +13,6 @@ import com.alxdev.two.moneychanger.ui.changer.CurrencyInformation
 import kotlinx.coroutines.*
 import ru.gildor.coroutines.retrofit.Result
 import ru.gildor.coroutines.retrofit.awaitResult
-import java.lang.Exception
 
 class ChangerRepository private constructor(private val moneyChangerDataBase: MoneyChangerDataBase) {
 
@@ -104,8 +103,7 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
 
     suspend fun getCurrencyListV2() = withContext(Dispatchers.IO) {
         Log.i("alxxt", "class 00 GET V2 START == - ${Thread.currentThread().name}")
-        val list = moneyChangerDataBase.currencyDAO.getAll()
-        val jobs = mutableListOf<Job>()
+//        val jobs = mutableListOf<Job>()
         val sup = SupervisorJob()
         val handler = CoroutineExceptionHandler { _, exception ->
             println("Caught $exception")
@@ -113,36 +111,37 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
 
         try {
 
-//            supervisorScope {
-//            coroutineScope {
-            list?.let { _list ->
-                for ((index, item) in _list.withIndex()) {
-                    if (index < 5) {
+            supervisorScope {
+                //            coroutineScope {
+                val list = moneyChangerDataBase.currencyDAO.getAll()
+                list?.let { _list ->
+                    for ((index, item) in _list.withIndex()) {
+                        if (index < 3) {
 
-                        jobs += launch {
-                            val currencyName = item.description.replace("USD", "")
+                            launch {
+                                val currencyName = item.description.replace("USD", "")
 
-                            if (index == 1)
-                                throw Exception("Test alxx")
-                            Log.i(
-                                "alxxt",
-                                "class 00_0 GET CURRENCY_COUNTRY START == $currencyName - ${Thread.currentThread().name}"
-                            )
-                            currencyCountryInfo(currencyName)
-                            Log.i(
-                                "alxxt",
-                                "class 00_0 GET CURRENCY_COUNTRY END == $currencyName - ${Thread.currentThread().name}"
-                            )
+//                                if (index == 1)
+//                                    throw Exception("Test alxx")
+                                Log.i(
+                                    "alxxt",
+                                    "class 00_0 GET CURRENCY_COUNTRY START == $currencyName - ${Thread.currentThread().name}"
+                                )
+                                currencyCountryInfo(currencyName)
+                                Log.i(
+                                    "alxxt",
+                                    "class 00_0 GET CURRENCY_COUNTRY END == $currencyName - ${Thread.currentThread().name}"
+                                )
+                            }
                         }
                     }
                 }
-//                }
             }
 
 
-            jobs.forEach {
-                it.join()
-            }
+//            jobs.forEach {
+//                it.join()
+//            }
 
 
         } catch (e: Exception) {
@@ -153,7 +152,7 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
     }
 
 
-    private suspend fun currencyCountryInfo(currencyName: String) = withContext(Dispatchers.IO) {
+    private suspend fun currencyCountryInfo(currencyName: String) {
 
         delay(5_000)
         when (val result = countryClient.getCountryByCurrencyName(currencyName).awaitResult()) {
@@ -184,11 +183,10 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
         return moneyChangerDataBase.historyDao.getAllLiveData()
     }
 
-    suspend fun saveHistory(currencyInformation: CurrencyInformation) {
+    suspend fun saveHistory(currencyInformation: CurrencyInformation) =
         withContext(Dispatchers.IO) {
             moneyChangerDataBase.historyDao.insert(currencyInformation.toHistory())
         }
-    }
 
     private fun CurrencyInformation.toHistory() = History(
         localCountry = localCountry,

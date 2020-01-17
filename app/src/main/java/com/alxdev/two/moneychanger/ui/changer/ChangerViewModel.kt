@@ -1,6 +1,5 @@
 package com.alxdev.two.moneychanger.ui.changer
 
-import com.alxdev.two.moneychanger.repo.Coroutines
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.*
@@ -9,10 +8,7 @@ import com.alxdev.two.moneychanger.R
 import com.alxdev.two.moneychanger.data.local.entity.Currency
 import com.alxdev.two.moneychanger.data.local.entity.History
 import com.alxdev.two.moneychanger.data.toCurrencyFormat
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-
 
 class ChangerViewModel : ViewModel() {
 
@@ -26,9 +22,7 @@ class ChangerViewModel : ViewModel() {
     }
 
     val foreignSpinnerValueSelected = MutableLiveData<Currency>()
-    val foreignCurrencyList: LiveData<List<Currency>?>
-        get() = changerRepository.getCurrencyListLive()
-
+    val foreignCurrencyList: LiveData<List<Currency>?> = changerRepository.getCurrencyListLive()
     val foreignEditText: LiveData<String>
         get() {
             return Transformations.map(foreignSpinnerValueSelected) {
@@ -41,14 +35,10 @@ class ChangerViewModel : ViewModel() {
         get() = totalMediator
     val totalEditText: LiveData<String> = _totalEditText
 
-
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage = _errorMessage
 
-    val historyChange: LiveData<List<History>?>
-        get() {
-            return changerRepository.getHistoryListLive()
-        }
+    val historyChange: LiveData<List<History>?> = changerRepository.getHistoryListLive()
 
     init {
         initTotalMediators()
@@ -71,20 +61,6 @@ class ChangerViewModel : ViewModel() {
         totalMediator.addSource(localEditText) {
             updateTotal()
         }
-
-//        Coroutines.ioThenMain({changerRepository.getCurrencyListLive()}){_liveData ->
-//
-//            _liveData?.let {
-//                historyDataBaseMediator.addSource(it)
-//            }
-//
-//        }
-//        viewModelScope.launch(Dispatchers.Main) {
-//            historyDataBaseMediator.addSource(changerRepository.getCurrencyListLive()) {
-//                Log.i("alxx", "")
-//                it
-//            }
-//        }
     }
 
     private fun updateTotal() {
@@ -106,8 +82,10 @@ class ChangerViewModel : ViewModel() {
     fun onCLickSave() {
         viewModelScope.launch {
             changerRepository.saveHistory(getCurrencyChangeInformation())
+
         }
-//        demoCurrencyCountryInfo()
+
+        demoCurrencyCountryInfo()
     }
 
     fun onHistoryItemCLick(view: View, valor: String) {

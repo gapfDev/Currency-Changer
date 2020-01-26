@@ -15,6 +15,7 @@ import com.alxdev.two.moneychanger.data.local.entity.Currency
 @BindingAdapter("currency_values")
 fun setCurrencyValues(appCompatSpinner: AppCompatSpinner, currencyList: List<Currency>?) {
     Log.i("alxx", "${currencyList?.size ?: 0}")
+    Log.i("alxx", currencyList?.toString() ?: ":(")
     val adapter =
         ArrayAdapter(
             appCompatSpinner.context,

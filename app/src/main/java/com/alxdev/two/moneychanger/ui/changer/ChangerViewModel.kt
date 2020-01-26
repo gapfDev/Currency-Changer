@@ -2,6 +2,7 @@ package com.alxdev.two.moneychanger.ui.changer
 
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import androidx.lifecycle.*
 import com.alxdev.two.moneychanger.AppApplication
 import com.alxdev.two.moneychanger.R
@@ -43,6 +44,14 @@ class ChangerViewModel : ViewModel() {
     init {
         initTotalMediators()
         initSyncCurrency()
+//        demoCurrencyCountryInfo()
+    }
+
+    private fun demoCurrencyCountryInfo() {
+        viewModelScope.launch {
+            changerRepository.getCurrencyListV2()
+            Log.i("alxx", "DONE ?")
+        }
     }
 
     private fun initTotalMediators() {
@@ -67,7 +76,7 @@ class ChangerViewModel : ViewModel() {
     private fun initSyncCurrency() {
         viewModelScope.launch {
             Log.i("alxxt", "class 0 - ${Thread.currentThread().name}")
-            changerRepository.syncCurrencyAPI()
+            changerRepository.syncCurrencyAPIV2()
         }
     }
 
@@ -75,6 +84,7 @@ class ChangerViewModel : ViewModel() {
         viewModelScope.launch {
             changerRepository.saveHistory(getCurrencyChangeInformation())
         }
+//        demoCurrencyCountryInfo()
     }
 
     fun onHistoryItemCLick(view: View, valor: String) {

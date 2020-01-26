@@ -2,7 +2,6 @@ package com.alxdev.two.moneychanger.ui.changer
 
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import androidx.lifecycle.*
 import com.alxdev.two.moneychanger.AppApplication
 import com.alxdev.two.moneychanger.R
@@ -43,15 +42,7 @@ class ChangerViewModel : ViewModel() {
 
     init {
         initTotalMediators()
-        initSyncCurrency()
-//        demoCurrencyCountryInfo()
-    }
-
-    private fun demoCurrencyCountryInfo() {
-        viewModelScope.launch {
-            changerRepository.getCurrencyListV2()
-            Log.i("alxx", "DONE ?")
-        }
+        initSyncCurrencyLaunch()
     }
 
     private fun initTotalMediators() {
@@ -64,6 +55,20 @@ class ChangerViewModel : ViewModel() {
         }
     }
 
+    private fun initCurrencyCountryInfoLaunch() {
+        viewModelScope.launch {
+            changerRepository.getCurrencyCountryListV2()
+            Log.i("alxx", "DONE ?")
+        }
+    }
+
+    private fun initSyncCurrencyLaunch() {
+        viewModelScope.launch {
+            Log.i("alxxt", "class 0 - ${Thread.currentThread().name}")
+            changerRepository.syncCurrencyAPIV2()
+        }
+    }
+
     private fun updateTotal() {
         val foreignQuantity = foreignSpinnerValueSelected.value?.value ?: 0.0
         val localQuantity = localEditText.value.takeUnless {
@@ -73,29 +78,7 @@ class ChangerViewModel : ViewModel() {
         _totalEditText.value = (foreignQuantity * localQuantity).toCurrencyFormat()
     }
 
-    private fun initSyncCurrency() {
-        viewModelScope.launch {
-            Log.i("alxxt", "class 0 - ${Thread.currentThread().name}")
-            changerRepository.syncCurrencyAPIV2()
-        }
-    }
-
-    fun onCLickSave() {
-        viewModelScope.launch {
-            changerRepository.saveHistory(getCurrencyChangeInformation())
-        }
-//        demoCurrencyCountryInfo()
-    }
-
-    fun onHistoryItemCLick(view: View, valor: String) {
-        if (view.id == R.id.data_up) {
-            Log.i("alxxC", "UP -- $valor")
-        } else if (view.id == R.id.imgDetailHistory) {
-            Log.i("alxxC", "Detail -- $valor")
-        }
-    }
-
-    private fun getCurrencyChangeInformation(): CurrencyInformation {
+    private fun getCurrencyChangeInformation(): CurrencyInformationDTO {
         val foreignCurrencyQuantity = foreignSpinnerValueSelected.value?.value ?: 0.0
         val localCurrencyQuantity = localEditText.value.takeUnless {
             it.isNullOrBlank()
@@ -106,20 +89,26 @@ class ChangerViewModel : ViewModel() {
         val foreignCountry =
             foreignSpinnerValueSelected.value?.description ?: localCurrencyList[0].description
 
-        return CurrencyInformation(
+        return CurrencyInformationDTO(
             localCountry,
             foreignCountry,
             localCurrencyQuantity,
             foreignCurrencyQuantity
         )
     }
+
+    fun onCLickSaveLaunch() {
+        viewModelScope.launch {
+            changerRepository.saveHistory(getCurrencyChangeInformation())
+        }
+//        initCurrencyCountryInfoLaunch()
+    }
+
+    fun onHistoryItemCLick(view: View, valor: String) {
+        if (view.id == R.id.data_up) {
+            Log.i("alxxC", "UP -- $valor")
+        } else if (view.id == R.id.imgDetailHistory) {
+            Log.i("alxxC", "Detail -- $valor")
+        }
+    }
 }
-
-class CurrencyInformation(
-    val localCountry: String,
-    val foreignCountry: String,
-    val localCurrencyQuantity: Double,
-    val foreignCurrencyQuantity: Double
-)
-
-class HistoryItemViewModel(val itemText: String)

@@ -6,7 +6,7 @@
 
         <variable
             name="historyItem"
-            type="com.alxdev.two.moneychanger.ui.changer.HistoryItemViewModel" />
+            type="com.alxdev.two.moneychanger.ui.changer.HistoryItem" />
 
         <variable
             name="viewModel"

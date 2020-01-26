@@ -9,7 +9,8 @@ import com.alxdev.two.moneychanger.data.local.entity.History
 import com.alxdev.two.moneychanger.data.remote.Constants
 import com.alxdev.two.moneychanger.data.remote.CurrencyAPIService
 import com.alxdev.two.moneychanger.data.remote.CurrencyCountryAPIService
-import com.alxdev.two.moneychanger.ui.changer.CurrencyInformation
+import com.alxdev.two.moneychanger.ui.changer.CurrencyInformationDTO
+import com.alxdev.two.moneychanger.ui.changer.toHistory
 import fr.speekha.httpmocker.MockResponseInterceptor
 import fr.speekha.httpmocker.model.ResponseDescriptor
 import kotlinx.coroutines.*
@@ -39,45 +40,21 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
         }
     }
 
-    private val client: CurrencyAPIService by lazy {
-        AppApplication.currencyListRetrofitBuild.retrofit.create(
-            CurrencyAPIService::class.java
-        )
-    }
-
     private val mockClient: CurrencyAPIService by lazy {
-        AppApplication.mockRetrofit.retrofitBuild(Constants.API.BASE_URL, mockSolution())
+        AppApplication.mockRetrofit.retrofitBuild(Constants.API.BASE_URL, initMockSolution())
             .create(CurrencyAPIService::class.java)
     }
 
-    private fun mockSolution(): MockResponseInterceptor.Builder {
-        return MockResponseInterceptor.Builder().apply {
-            useDynamicMocks {
-                ResponseDescriptor(code = 200, body = Constants.MockData.JSON)
-            }
-        }
-
-    }
-
     private val countryClient: CurrencyCountryAPIService by lazy {
-        AppApplication.currencyCountryRetrofitBuild.retrofit.create(
+        AppApplication.currencyCountryRetrofitBuild.create(
             CurrencyCountryAPIService::class.java
         )
     }
 
-    suspend fun syncCurrencyAPI() = withContext(Dispatchers.IO) {
-        Log.i("alxxt", "class 00_0 call API - ${Thread.currentThread().name}")
-        when (val result = client.getCurrencyResult(Constants.Key.ACCESS_KEY).awaitResult()) {
-            is Result.Ok -> {
-                result.value.getQuotesList().takeIf {
-                    it.isNotEmpty()
-                }?.let {
-                    saveCurrencyList(it)
-                }
-            }
-            is Result.Error -> {
-            }
-            is Result.Exception -> {
+    private fun initMockSolution(): MockResponseInterceptor.Builder {
+        return MockResponseInterceptor.Builder().apply {
+            useDynamicMocks {
+                ResponseDescriptor(code = 200, body = Constants.MockData.JSON)
             }
         }
     }
@@ -107,18 +84,10 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
             moneyChangerDataBase.currencyDAO.saveCurrencyList(currencyList)
         }
 
-    suspend fun getCurrency(): Currency? = withContext(Dispatchers.IO) {
-        val data = moneyChangerDataBase.currencyDAO.getAll()?.get(0)
-        Log.i(
-            "alxx",
-            "class 00_0 get data <- ${data?.description} ${data?.value} ${moneyChangerDataBase.currencyDAO.getAll()?.size}"
-        )
-        data
-    }
-
-    suspend fun getCurrencyList(): List<Currency> = withContext(Dispatchers.IO) {
-        moneyChangerDataBase.currencyDAO.getAll()
-    } ?: emptyList()
+    suspend fun saveHistory(currencyInformation: CurrencyInformationDTO) =
+        withContext(Dispatchers.IO) {
+            moneyChangerDataBase.historyDao.insert(currencyInformation.toHistory())
+        }
 
     fun getCurrencyListLive(): LiveData<List<Currency>?> = runBlocking {
         Log.i("alxxt", "class 00 GET LIVE - ${Thread.currentThread().name}")
@@ -133,14 +102,8 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
         return moneyChangerDataBase.historyDao.getAllLiveData()
     }
 
-    suspend fun saveHistory(currencyInformation: CurrencyInformation) =
-        withContext(Dispatchers.IO) {
-            moneyChangerDataBase.historyDao.insert(currencyInformation.toHistory())
-        }
-
-    suspend fun getCurrencyListV2() = withContext(Dispatchers.IO) {
+    suspend fun getCurrencyCountryListV2() = withContext(Dispatchers.IO) {
         Log.i("alxxt", "class 00 GET V2 START == - ${Thread.currentThread().name}")
-        val sup = SupervisorJob()
         val handler = CoroutineExceptionHandler { _, exception ->
             println("Caught $exception")
         }
@@ -152,13 +115,16 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
                 }
                 supervisorScope {
                     for (item in newList) {
-                        launch {
+                        launch(handler) {
                             currencyCountryInfo(item)
+//                            Exception EXAMPLE -->
+//                            if(item.contentEquals("BDT"))
+//                                throw java.lang.Exception("BDT")
+
                         }
                     }
                 }
             }
-//                }
         } catch (e: Exception) {
             Log.i("alxxE", e.toString())
         }
@@ -187,26 +153,4 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
             }
         }
     }
-
-    private fun CurrencyInformation.toHistory() = History(
-        localCountry = localCountry,
-        foreignCountry = foreignCountry,
-        localCurrencyQuantity = localCurrencyQuantity,
-        foreignCurrencyQuantity = foreignCurrencyQuantity
-    )
-}
-
-object Coroutines {
-    fun io(work: suspend (() -> Unit)): Job =
-        CoroutineScope(Dispatchers.IO).launch {
-            work()
-        }
-
-    fun <T : Any> ioThenMain(work: suspend (() -> T?), callback: ((T?) -> Unit)): Job =
-        CoroutineScope(Dispatchers.Main).launch {
-            val data = CoroutineScope(Dispatchers.IO).async rt@{
-                return@rt work()
-            }.await()
-            callback(data)
-        }
 }

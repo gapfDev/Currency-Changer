@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.alxdev.two.moneychanger.data.local.entity.History
 import com.alxdev.two.moneychanger.databinding.ItemHistoryBinding
 import com.alxdev.two.moneychanger.ui.changer.ChangerViewModel
-import com.alxdev.two.moneychanger.ui.changer.HistoryItemViewModel
+import com.alxdev.two.moneychanger.ui.changer.HistoryItem
 
 class IRecyclerViewAdapter(private val viewModel: ChangerViewModel) : RecyclerView.Adapter<IRecyclerViewAdapter.ViewHolder>() {
     private var items: List<History> = emptyList()
@@ -22,7 +22,7 @@ class IRecyclerViewAdapter(private val viewModel: ChangerViewModel) : RecyclerVi
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val history = items[position]
-        val historyItem = HistoryItemViewModel(history.totalCurrencyChange())
+        val historyItem = HistoryItem(history.totalCurrencyChange())
          holder.bind(historyItem)
     }
 
@@ -34,7 +34,7 @@ class IRecyclerViewAdapter(private val viewModel: ChangerViewModel) : RecyclerVi
     inner class ViewHolder(private val itemBinding: ItemHistoryBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
 
-        fun bind(history: HistoryItemViewModel) {
+        fun bind(history: HistoryItem) {
             itemBinding.historyItem = history
             itemBinding.viewModel = viewModel
         }

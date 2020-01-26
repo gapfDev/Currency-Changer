@@ -14,23 +14,23 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 
-class RetrofitBuild(baseURL: String) {
-    val retrofit: Retrofit by lazy {
-
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
-
-        val client = OkHttpClient.Builder()
-            .addInterceptor(interceptor)
-            .build()
-
-        Retrofit.Builder().apply {
-            baseUrl(baseURL)
-            client(client)
-            addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
-        }.build()
-    }
-}
+//class RetrofitBuild(baseURL: String) {
+//    val retrofit: Retrofit by lazy {
+//
+//        val interceptor = HttpLoggingInterceptor()
+//        interceptor.level = HttpLoggingInterceptor.Level.BODY
+//
+//        val client = OkHttpClient.Builder()
+//            .addInterceptor(interceptor)
+//            .build()
+//
+//        Retrofit.Builder().apply {
+//            baseUrl(baseURL)
+//            client(client)
+//            addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
+//        }.build()
+//    }
+//}
 
 object MockRetrofitController {
 

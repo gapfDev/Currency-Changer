@@ -2,10 +2,9 @@ package com.alxdev.two.moneychanger
 
 import android.app.Application
 import android.content.Context
-import com.alxdev.two.moneychanger.data.remote.Constants
 import com.alxdev.two.moneychanger.data.local.MoneyChangerDataBase
+import com.alxdev.two.moneychanger.data.remote.Constants
 import com.alxdev.two.moneychanger.data.remote.MockRetrofitController
-import com.alxdev.two.moneychanger.data.remote.RetrofitBuild
 import com.alxdev.two.moneychanger.repo.ChangerRepository
 
 class AppApplication : Application() {
@@ -20,13 +19,13 @@ class AppApplication : Application() {
             return instance!!.applicationContext
         }
 
-        val currencyListRetrofitBuild: RetrofitBuild
-            get() = RetrofitBuild(
+        val currencyListRetrofitBuild
+            get() = MockRetrofitController.retrofitBuild(
                 Constants.API.BASE_URL
             )
 
-        val currencyCountryRetrofitBuild: RetrofitBuild
-            get() = RetrofitBuild(
+        val currencyCountryRetrofitBuild
+            get() = MockRetrofitController.retrofitBuild(
                 Constants.API.COUNTRY_BASE_URL
             )
 

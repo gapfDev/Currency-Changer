@@ -201,7 +201,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/mediumMargin"
-                android:onClick="@{()-> viewModel.onCLickSave()}"
+                android:onClick="@{()-> viewModel.onCLickSaveLaunch()}"
                 android:text="@string/save"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

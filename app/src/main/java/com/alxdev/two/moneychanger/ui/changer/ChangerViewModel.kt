@@ -84,7 +84,7 @@ class ChangerViewModel : ViewModel() {
         viewModelScope.launch {
             changerRepository.saveHistory(getCurrencyChangeInformation())
         }
-        demoCurrencyCountryInfo()
+//        demoCurrencyCountryInfo()
     }
 
     fun onHistoryItemCLick(view: View, valor: String) {

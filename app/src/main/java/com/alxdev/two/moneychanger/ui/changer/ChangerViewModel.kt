@@ -75,16 +75,14 @@ class ChangerViewModel : ViewModel() {
     private fun initSyncCurrency() {
         viewModelScope.launch {
             Log.i("alxxt", "class 0 - ${Thread.currentThread().name}")
-            changerRepository.syncCurrencyAPI()
+            changerRepository.syncCurrencyAPIV2()
         }
     }
 
     fun onCLickSave() {
         viewModelScope.launch {
             changerRepository.saveHistory(getCurrencyChangeInformation())
-
         }
-
         demoCurrencyCountryInfo()
     }
 

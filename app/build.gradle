@@ -57,6 +57,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.squareup.retrofit2:converter-gson:2.6.2'
     implementation "com.squareup.okhttp3:logging-interceptor:4.0.1"
+    implementation 'fr.speekha.httpmocker:mocker:1.1.7'
+    implementation "fr.speekha.httpmocker:gson-adapter:1.1.7"
 
 //    Retrofit ext
     implementation 'ru.gildor.coroutines:kotlin-coroutines-retrofit:1.1.0'

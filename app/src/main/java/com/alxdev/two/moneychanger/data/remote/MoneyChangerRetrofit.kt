@@ -1,9 +1,9 @@
 package com.alxdev.two.moneychanger.data.remote
 
-import com.alxdev.two.moneychanger.data.remote.country.CountryDTO
 import com.alxdev.two.moneychanger.data.remote.currency.CurrencyDTO
 import com.alxdev.two.moneychanger.data.remote.currencycountry.CurrencyCountryDTO
 import com.google.gson.GsonBuilder
+import fr.speekha.httpmocker.MockResponseInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -25,6 +25,35 @@ class RetrofitBuild(baseURL: String) {
             .build()
 
         Retrofit.Builder().apply {
+            baseUrl(baseURL)
+            client(client)
+            addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
+        }.build()
+    }
+}
+
+object MockRetrofitController {
+
+    fun retrofitBuild(
+        baseURL: String,
+        mockResponseInterceptor: MockResponseInterceptor.Builder? = null
+    ): Retrofit {
+        val httpLoggingInterceptor = HttpLoggingInterceptor()
+        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+
+        mockResponseInterceptor?.apply {
+            setInterceptorStatus(MockResponseInterceptor.Mode.ENABLED)
+            addFakeNetworkDelay(1_000)
+        }
+
+        val client = OkHttpClient.Builder().apply {
+            addInterceptor(httpLoggingInterceptor)
+            mockResponseInterceptor?.let {
+                addInterceptor(it.build())
+            }
+        }.build()
+
+        return Retrofit.Builder().apply {
             baseUrl(baseURL)
             client(client)
             addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))

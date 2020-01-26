@@ -107,57 +107,24 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
             moneyChangerDataBase.currencyDAO.saveCurrencyList(currencyList)
         }
 
-    fun getCurrencyListLive(): LiveData<List<Currency>?> {
+    suspend fun getCurrency(): Currency? = withContext(Dispatchers.IO) {
+        val data = moneyChangerDataBase.currencyDAO.getAll()?.get(0)
+        Log.i(
+            "alxx",
+            "class 00_0 get data <- ${data?.description} ${data?.value} ${moneyChangerDataBase.currencyDAO.getAll()?.size}"
+        )
+        data
+    }
+
+    suspend fun getCurrencyList(): List<Currency> = withContext(Dispatchers.IO) {
+        moneyChangerDataBase.currencyDAO.getAll()
+    } ?: emptyList()
+
+    fun getCurrencyListLive(): LiveData<List<Currency>?> = runBlocking {
         Log.i("alxxt", "class 00 GET LIVE - ${Thread.currentThread().name}")
-        return moneyChangerDataBase.currencyDAO.getAllLiveData()
-    }
-
-    suspend fun getCurrencyListV2() = withContext(Dispatchers.IO) {
-        Log.i("alxxt", "class 00 GET V2 START == - ${Thread.currentThread().name}")
-        val sup = SupervisorJob()
-        val handler = CoroutineExceptionHandler { _, exception ->
-            println("Caught $exception")
-        }
-        try {
-            val list = moneyChangerDataBase.currencyDAO.getAll()
-            list?.let { _list ->
-                val newList = _list.map {
-                    it.description.replace("USD", "")
-                }
-                supervisorScope {
-                    for (item in newList) {
-                        launch {
-                            currencyCountryInfo(item)
-                        }
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            Log.i("alxxE", e.toString())
-        }
-        Log.i("alxxt", "class 00 GET V2 FINISH == - ${Thread.currentThread().name}")
-    }
-
-    private suspend fun currencyCountryInfo(currencyName: String) {
-        when (val result = countryClient.getCountryByCurrencyName(currencyName).awaitResult()) {
-            is Result.Ok -> {
-                Log.i(
-                    "alxxt",
-                    "class 000_0 call API > OK ${result.value[0].name} - ${Thread.currentThread().name}"
-                )
-            }
-            is Result.Error -> {
-                Log.i(
-                    "alxxt",
-                    "class 000_0 call API > ERROR ${result.exception} - ${Thread.currentThread().name}"
-                )
-            }
-            is Result.Exception -> {
-                Log.i(
-                    "alxxt",
-                    "class 000_0 call API > EXCEPTION ${result.exception} - ${Thread.currentThread().name}"
-                )
-            }
+        withContext(Dispatchers.IO) {
+            Log.i("alxxt", "class 00_0 GET LIVE - ${Thread.currentThread().name}")
+            moneyChangerDataBase.currencyDAO.getAllLiveData()
         }
     }
 
@@ -170,6 +137,7 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
         withContext(Dispatchers.IO) {
             moneyChangerDataBase.historyDao.insert(currencyInformation.toHistory())
         }
+    }
 
     private fun CurrencyInformation.toHistory() = History(
         localCountry = localCountry,

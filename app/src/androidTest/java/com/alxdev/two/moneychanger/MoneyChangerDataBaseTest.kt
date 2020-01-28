@@ -42,7 +42,7 @@ class MoneyChangerDataBaseTest {
     fun insertAndGet() {
         val currency = Currency()
         currencyDAO.insert(currency)
-        val coin: Currency? = currencyDAO.getCoin()
+        val coin: Currency? = currencyDAO.getCurrency()
         assertEquals(coin?.value, 0.0)
     }
 }

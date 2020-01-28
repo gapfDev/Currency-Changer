@@ -1,6 +1,5 @@
 package com.alxdev.two.moneychanger.repo
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import com.alxdev.two.moneychanger.AppApplication
 import com.alxdev.two.moneychanger.data.local.MoneyChangerDataBase
@@ -9,7 +8,10 @@ import com.alxdev.two.moneychanger.data.local.entity.History
 import com.alxdev.two.moneychanger.data.remote.Constants
 import com.alxdev.two.moneychanger.data.remote.CurrencyAPIService
 import com.alxdev.two.moneychanger.data.remote.CurrencyCountryAPIService
+import com.alxdev.two.moneychanger.data.remote.currency.CurrencyDTO
+import com.alxdev.two.moneychanger.data.remote.currencycountry.CurrencyCountryDTO
 import com.alxdev.two.moneychanger.ui.changer.CurrencyInformationDTO
+import com.alxdev.two.moneychanger.ui.changer.toCurrency
 import com.alxdev.two.moneychanger.ui.changer.toHistory
 import fr.speekha.httpmocker.MockResponseInterceptor
 import fr.speekha.httpmocker.model.ResponseDescriptor
@@ -59,15 +61,10 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
         }
     }
 
-    suspend fun syncCurrencyAPIV2() = withContext(Dispatchers.IO) {
-        Log.i("alxxt", "class 00_0 call API - ${Thread.currentThread().name}")
+    suspend fun syncCurrencyAPI() = withContext(Dispatchers.IO) {
         when (val result = mockClient.getCurrencyResult(Constants.Key.ACCESS_KEY).awaitResult()) {
             is Result.Ok -> {
-                result.value.getQuotesList().takeIf {
-                    it.isNotEmpty()
-                }?.let {
-                    saveCurrencyList(it)
-                }
+                getCurrencyCountryList(result.value)
             }
             is Result.Error -> {
             }
@@ -78,8 +75,6 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
 
     private suspend fun saveCurrencyList(currencyList: List<Currency>) =
         withContext(Dispatchers.IO) {
-            Log.i("alxx", "class 00_0 Elements to save > ${currencyList.size}")
-            Log.i("alxxt", "class 00_0 INSERT - ${Thread.currentThread().name}")
             moneyChangerDataBase.currencyDAO.clear()
             moneyChangerDataBase.currencyDAO.saveCurrencyList(currencyList)
         }
@@ -90,67 +85,56 @@ class ChangerRepository private constructor(private val moneyChangerDataBase: Mo
         }
 
     fun getCurrencyListLive(): LiveData<List<Currency>?> = runBlocking {
-        Log.i("alxxt", "class 00 GET LIVE - ${Thread.currentThread().name}")
         withContext(Dispatchers.IO) {
-            Log.i("alxxt", "class 00_0 GET LIVE - ${Thread.currentThread().name}")
             moneyChangerDataBase.currencyDAO.getAllLiveData()
         }
     }
 
     fun getHistoryListLive(): LiveData<List<History>?> {
-        Log.i("alxxt", "class 00_0 GET LIVE HISTORY- ${Thread.currentThread().name}")
         return moneyChangerDataBase.historyDao.getAllLiveData()
     }
 
-    suspend fun getCurrencyCountryListV2() = withContext(Dispatchers.IO) {
-        Log.i("alxxt", "class 00 GET V2 START == - ${Thread.currentThread().name}")
+    private suspend fun getCurrencyCountryList(currency: CurrencyDTO) {
         val handler = CoroutineExceptionHandler { _, exception ->
             println("Caught $exception")
         }
-        try {
-            val list = moneyChangerDataBase.currencyDAO.getAll()
-            list?.let { _list ->
-                val newList = _list.map {
-                    it.description.replace("USD", "")
-                }
-                supervisorScope {
-                    for (item in newList) {
-                        launch(handler) {
-                            currencyCountryInfo(item)
-//                            Exception EXAMPLE -->
-//                            if(item.contentEquals("BDT"))
-//                                throw java.lang.Exception("BDT")
 
+        if (moneyChangerDataBase.currencyDAO.getCount() == 0) {
+            val currencyListFromAPI = mutableListOf<Currency>()
+            supervisorScope {
+                currency.quotes.mapKeys {
+                    it.key.replace("USD", "")
+                }.toMap().forEach {
+                    launch(handler) {
+                        currencyCountryInfo(it)?.let {
+                            currencyListFromAPI.add(it)
                         }
                     }
                 }
             }
-        } catch (e: Exception) {
-            Log.i("alxxE", e.toString())
+
+            currencyListFromAPI.takeUnless {
+                it.isNullOrEmpty()
+            }?.let {
+                saveCurrencyList(it)
+            }
+
         }
-        Log.i("alxxt", "class 00 GET V2 FINISH == - ${Thread.currentThread().name}")
     }
 
-    private suspend fun currencyCountryInfo(currencyName: String) {
-        when (val result = countryClient.getCountryByCurrencyName(currencyName).awaitResult()) {
+    private suspend fun currencyCountryInfo(quote: Map.Entry<String, Double>): Currency? {
+        return when (val result = countryClient.getCountryByCurrencyName(quote.key).awaitResult()) {
             is Result.Ok -> {
-                Log.i(
-                    "alxxt",
-                    "class 000_0 call API > OK ${result.value[0].name} - ${Thread.currentThread().name}"
-                )
+                result.value[0].toCurrency(quote)
             }
             is Result.Error -> {
-                Log.i(
-                    "alxxt",
-                    "class 000_0 call API > ERROR ${result.exception} - ${Thread.currentThread().name}"
-                )
+                null
             }
             is Result.Exception -> {
-                Log.i(
-                    "alxxt",
-                    "class 000_0 call API > EXCEPTION ${result.exception} - ${Thread.currentThread().name}"
-                )
+                null
             }
         }
     }
 }
+
+

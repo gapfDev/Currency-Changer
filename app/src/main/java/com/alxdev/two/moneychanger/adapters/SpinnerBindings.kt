@@ -20,7 +20,9 @@ fun setCurrencyValues(appCompatSpinner: AppCompatSpinner, currencyList: List<Cur
         ArrayAdapter(
             appCompatSpinner.context,
             R.layout.spinner_item,
-            currencyList ?: listOf(Currency(value = 1.0, description = "USA"))
+            currencyList ?: listOf(
+                Currency()
+            )
         )
     adapter.setDropDownViewResource(R.layout.spinner_item)
 

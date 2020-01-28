@@ -8,24 +8,30 @@ import androidx.room.PrimaryKey
 data class Currency(
 
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id_currency_info")
     val id: Long = 0L,
 
-    @ColumnInfo(name = "description")
-    var description:String = "demo",
+    @ColumnInfo(name = "currency_name")
+    var name: String = "Dollar",
 
-    @ColumnInfo(name = "icon")
-    var icon:String = "no",
+    @ColumnInfo(name = "currency_value")
+    var value: Double = 0.0,
 
-    @ColumnInfo(name = "value")
-    var value:Double = 0.0
+    @ColumnInfo(name = "currency_short_name")
+    var shortName: String = "USD",
 
+    @ColumnInfo(name = "currency_country_name")
+    var countryName: String = "United State of America",
+
+    @ColumnInfo(name = "currency_country_icon")
+    var icon: String = "testString"
 ) {
 
     companion object {
-        const val TABLE_NAME = "currency"
+        const val TABLE_NAME = "currency_info"
     }
 
     override fun toString(): String {
-        return this.description
+        return this.countryName
     }
 }

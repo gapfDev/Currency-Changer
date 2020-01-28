@@ -22,7 +22,7 @@ interface CurrencyDao {
     @Query("DELETE FROM " + Currency.TABLE_NAME)
     fun clear()
 
-    @Query("SELECT * FROM " + Currency.TABLE_NAME)
+    @Query("SELECT * FROM ${Currency.TABLE_NAME} ORDER BY currency_country_name ASC" )
     fun getAllLiveData(): LiveData<List<Currency>?>
 
     @Query("SELECT * FROM " + Currency.TABLE_NAME)
@@ -33,4 +33,7 @@ interface CurrencyDao {
 
     @Query("SELECT * FROM ${Currency.TABLE_NAME} LIMIT 1 ")
     fun getCurrencyLD(): LiveData<Currency?>
+
+    @Query("SELECT COUNT(id_currency_info) FROM ${Currency.TABLE_NAME}")
+    fun getCount() : Int
 }

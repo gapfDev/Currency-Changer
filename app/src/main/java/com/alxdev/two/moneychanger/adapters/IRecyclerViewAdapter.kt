@@ -7,13 +7,14 @@ import com.alxdev.two.moneychanger.data.local.entity.History
 import com.alxdev.two.moneychanger.databinding.ItemHistoryBinding
 import com.alxdev.two.moneychanger.ui.changer.ChangerViewModel
 import com.alxdev.two.moneychanger.ui.changer.HistoryItem
+import com.alxdev.two.moneychanger.ui.changer.totalCurrencyChange
 
 class IRecyclerViewAdapter(private val viewModel: ChangerViewModel) : RecyclerView.Adapter<IRecyclerViewAdapter.ViewHolder>() {
     private var items: List<History> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater =
-            LayoutInflater.from(parent.context) //inflate(R.layout.item_history, parent, false)
+            LayoutInflater.from(parent.context)
         val itemBinding = ItemHistoryBinding.inflate(inflater, parent, false)
         return ViewHolder(itemBinding)
     }

@@ -9,21 +9,4 @@ data class CurrencyDTO(
     val success: Boolean,
     val terms: String,
     val timestamp: Int
-) {
-
-    fun getQuotesList(): List<Currency> =
-        mutableListOf<Currency>().apply {
-            quotes.takeUnless {
-                it.isNullOrEmpty()
-            }?.let { _quotes ->
-                _quotes.forEach {
-                    this.add(
-                        Currency(
-                            description = it.key,
-                            value = it.value
-                        )
-                    )
-                }
-            } ?: emptyList<CurrencyDTO>()
-        }
-}
+)

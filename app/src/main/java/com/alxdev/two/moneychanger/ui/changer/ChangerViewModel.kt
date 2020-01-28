@@ -16,7 +16,10 @@ class ChangerViewModel : ViewModel() {
         get() = AppApplication.changerRepository
 
     val localSpinnerValueSelected = MutableLiveData<Currency>()
-    val localCurrencyList: List<Currency> get() = listOf(Currency(value = 1.0, description = "USA"))
+    val localCurrencyList: List<Currency>
+        get() = listOf(
+            Currency()
+        )
     val localEditText = MutableLiveData<String>().apply {
         value = "1"
     }
@@ -55,17 +58,9 @@ class ChangerViewModel : ViewModel() {
         }
     }
 
-    private fun initCurrencyCountryInfoLaunch() {
-        viewModelScope.launch {
-            changerRepository.getCurrencyCountryListV2()
-            Log.i("alxx", "DONE ?")
-        }
-    }
-
     private fun initSyncCurrencyLaunch() {
         viewModelScope.launch {
-            Log.i("alxxt", "class 0 - ${Thread.currentThread().name}")
-            changerRepository.syncCurrencyAPIV2()
+            changerRepository.syncCurrencyAPI()
         }
     }
 
@@ -85,9 +80,9 @@ class ChangerViewModel : ViewModel() {
         }?.toDouble() ?: 0.0
 
         val localCountry =
-            localSpinnerValueSelected.value?.description ?: localCurrencyList[0].description
+            localSpinnerValueSelected.value?.countryName ?: localCurrencyList[0].countryName
         val foreignCountry =
-            foreignSpinnerValueSelected.value?.description ?: localCurrencyList[0].description
+            foreignSpinnerValueSelected.value?.countryName ?: localCurrencyList[0].countryName
 
         return CurrencyInformationDTO(
             localCountry,
@@ -101,7 +96,6 @@ class ChangerViewModel : ViewModel() {
         viewModelScope.launch {
             changerRepository.saveHistory(getCurrencyChangeInformation())
         }
-//        initCurrencyCountryInfoLaunch()
     }
 
     fun onHistoryItemCLick(view: View, valor: String) {

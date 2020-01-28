@@ -12,12 +12,10 @@ class History(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
 
-//    val date: Date = Date(),
-
-    @ColumnInfo(name = "local_country")
+    @ColumnInfo(name = "currency_local_country")
     val localCountry: String,
 
-    @ColumnInfo(name = "foreign_country")
+    @ColumnInfo(name = "currency_foreign_country")
     val foreignCountry: String,
 
     @ColumnInfo(name = "local_currency_quantity")
@@ -25,18 +23,12 @@ class History(
 
     @ColumnInfo(name = "foreign_currency_quantity")
     val foreignCurrencyQuantity: Double
+
+//    @ColumnInfo(name = "time_millis")
+//    val timeMillis : String
 ) {
 
     companion object {
-        const val TABLE_NAME = "history"
-    }
-
-    @Ignore
-    fun totalCurrencyChange(): String {
-        val localQuantity = localCurrencyQuantity.toCurrencyFormat()
-        val foreignQuantity = foreignCurrencyQuantity.toCurrencyFormat()
-        val total =
-            (localCurrencyQuantity * foreignCurrencyQuantity).toCurrencyFormat()
-        return "Local country : ${localCountry} \r\nCurrency Quantity = $localQuantity \r\nForeign Country : ${foreignCountry} \r\nCurrency Quantity = $foreignQuantity \r\nConversion : $total"
+        const val TABLE_NAME = "change_history"
     }
 }

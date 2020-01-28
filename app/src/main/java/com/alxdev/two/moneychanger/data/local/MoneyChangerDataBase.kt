@@ -9,7 +9,7 @@ import com.alxdev.two.moneychanger.data.local.dao.HistoryDao
 import com.alxdev.two.moneychanger.data.local.entity.Currency
 import com.alxdev.two.moneychanger.data.local.entity.History
 
-@Database(entities = [Currency::class, History::class], version = 3, exportSchema = false)
+@Database(entities = [Currency::class, History::class], version = 4, exportSchema = false)
 abstract class MoneyChangerDataBase : RoomDatabase() {
 
     abstract val currencyDAO: CurrencyDao

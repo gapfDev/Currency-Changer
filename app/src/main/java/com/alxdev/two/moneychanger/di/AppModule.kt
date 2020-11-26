@@ -1,6 +1,10 @@
 package com.alxdev.two.moneychanger.di
 
 import android.content.Context
+import com.alxdev.two.moneychanger.core.data.local.CurrencyDAOAction
+import com.alxdev.two.moneychanger.core.data.local.CurrencyDAOImp
+import com.alxdev.two.moneychanger.core.data.local.HistoryDAOAction
+import com.alxdev.two.moneychanger.core.data.local.HistoryDAOImp
 import com.alxdev.two.moneychanger.data.local.MoneyChangerDataBase
 import com.alxdev.two.moneychanger.data.remote.AppRetrofit
 import com.alxdev.two.moneychanger.data.remote.Constants
@@ -44,6 +48,12 @@ object AppModule {
         return MoneyChangerDataBase.getInstance(context)
     }
 
+    @Provides
+    fun providesHistoryDAO(moneyChangerDB: MoneyChangerDataBase): HistoryDAOAction = HistoryDAOImp(moneyChangerDB)
+
+    @Provides
+    fun providesCurrencyDAO(moneyChangerDB: MoneyChangerDataBase) : CurrencyDAOAction = CurrencyDAOImp(moneyChangerDB)
+
     @CurrencyAPI
     @Singleton
     @Provides
@@ -80,12 +90,14 @@ object AppModule {
 
     @Provides
     fun provideChangerRepository(
-        moneyChangerDB: MoneyChangerDataBase,
+        historyDAOAction: HistoryDAOAction,
+        currencyDAOAction: CurrencyDAOAction,
         @CurrencyAPI currencyAPIService: CurrencyAPIService,
         @CurrencyCountryAPI currencyCountryAPIService: CurrencyCountryAPIService,
     ): ChangerRepository {
         return ChangerRepository(
-            moneyChangerDB,
+            historyDAOAction,
+            currencyDAOAction,
             currencyAPIService,
             currencyCountryAPIService
         )

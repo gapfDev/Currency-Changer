@@ -25,8 +25,7 @@ abstract class MoneyChangerDataBase : RoomDatabase() {
         fun getInstance(context: Context): MoneyChangerDataBase {
             synchronized(this) {
 
-                var instance =
-                    INSTANCE
+                var instance = INSTANCE
 
                 if (instance == null) {
                     instance = Room.databaseBuilder(

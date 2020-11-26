@@ -3,17 +3,17 @@ package com.alxdev.two.moneychanger.ui.changer
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.*
-import com.alxdev.two.moneychanger.AppApplication
 import com.alxdev.two.moneychanger.R
 import com.alxdev.two.moneychanger.data.local.entity.Currency
 import com.alxdev.two.moneychanger.data.local.entity.History
 import com.alxdev.two.moneychanger.data.toCurrencyFormat
+import com.alxdev.two.moneychanger.repo.ChangerRepository
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ChangerViewModel : ViewModel() {
-
-    private val changerRepository
-        get() = AppApplication.changerRepository
+class ChangerViewModel @Inject constructor(
+    private val changerRepository: ChangerRepository
+) : ViewModel() {
 
     val localSpinnerValueSelected = MutableLiveData<Currency>()
     val localCurrencyList: List<Currency>

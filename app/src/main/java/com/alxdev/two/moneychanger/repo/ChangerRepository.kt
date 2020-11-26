@@ -1,16 +1,17 @@
 package com.alxdev.two.moneychanger.repo
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import com.alxdev.two.moneychanger.data.local.MoneyChangerDataBase
 import com.alxdev.two.moneychanger.data.local.entity.Currency
-import com.alxdev.two.moneychanger.data.local.entity.History
+import com.alxdev.two.moneychanger.data.model.CurrencyInformation
 import com.alxdev.two.moneychanger.data.remote.Constants
 import com.alxdev.two.moneychanger.data.remote.CurrencyAPIService
 import com.alxdev.two.moneychanger.data.remote.CurrencyCountryAPIService
 import com.alxdev.two.moneychanger.data.remote.currency.CurrencyDTO
-import com.alxdev.two.moneychanger.ui.changer.CurrencyInformationDTO
-import com.alxdev.two.moneychanger.ui.changer.toCurrency
-import com.alxdev.two.moneychanger.ui.changer.toHistory
+import com.alxdev.two.moneychanger.extension.toCurrencyEntity
+import com.alxdev.two.moneychanger.extension.toHistoryEntity
+import com.alxdev.two.moneychanger.extension.toModel
 import kotlinx.coroutines.*
 import ru.gildor.coroutines.retrofit.Result
 import ru.gildor.coroutines.retrofit.awaitResult
@@ -21,6 +22,19 @@ class ChangerRepository @Inject constructor(
     private val currencyClient: CurrencyAPIService,
     private val currencyCountryClient: CurrencyCountryAPIService,
 ) {
+
+    private val _historyMediator =
+        MediatorLiveData<List<com.alxdev.two.moneychanger.data.model.History>>()
+    val historyLiveData: LiveData<List<com.alxdev.two.moneychanger.data.model.History>> =
+        _historyMediator
+
+    init {
+        _historyMediator.addSource(moneyChangerDataBase.historyDao.getAllLiveData()) { _entityHistory ->
+            _entityHistory?.let { _entityHistoryList ->
+                _historyMediator.value = _entityHistoryList.toModel()
+            }
+        }
+    }
 
     suspend fun syncCurrencyAPI() = withContext(Dispatchers.IO) {
         when (val result =
@@ -41,20 +55,12 @@ class ChangerRepository @Inject constructor(
             moneyChangerDataBase.currencyDAO.saveCurrencyList(currencyList)
         }
 
-    suspend fun saveHistory(currencyInformation: CurrencyInformationDTO) =
+    suspend fun saveHistory(currencyInformation: CurrencyInformation) =
         withContext(Dispatchers.IO) {
-            moneyChangerDataBase.historyDao.insert(currencyInformation.toHistory())
+            moneyChangerDataBase.historyDao.insert(currencyInformation.toHistoryEntity())
         }
 
-    fun getCurrencyListLive(): LiveData<List<Currency>?> = runBlocking {
-        withContext(Dispatchers.IO) {
-            moneyChangerDataBase.currencyDAO.getAllLiveData()
-        }
-    }
-
-    fun getHistoryListLive(): LiveData<List<History>?> {
-        return moneyChangerDataBase.historyDao.getAllLiveData()
-    }
+    fun getCurrencyListLive(): LiveData<List<Currency>?> = moneyChangerDataBase.currencyDAO.getAllLiveData()
 
     private suspend fun getCurrencyCountryList(currency: CurrencyDTO) {
         val handler = CoroutineExceptionHandler { _, exception ->
@@ -88,7 +94,7 @@ class ChangerRepository @Inject constructor(
         return when (val result =
             currencyCountryClient.getCountryByCurrencyName(quote.key).awaitResult()) {
             is Result.Ok -> {
-                result.value[0].toCurrency(quote)
+                result.value[0].toCurrencyEntity(quote)
             }
             is Result.Error -> {
                 null
@@ -99,5 +105,7 @@ class ChangerRepository @Inject constructor(
         }
     }
 }
+
+
 
 

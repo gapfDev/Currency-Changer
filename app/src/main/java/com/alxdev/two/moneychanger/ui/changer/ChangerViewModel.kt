@@ -5,8 +5,8 @@ import android.view.View
 import androidx.lifecycle.*
 import com.alxdev.two.moneychanger.R
 import com.alxdev.two.moneychanger.data.local.entity.Currency
-import com.alxdev.two.moneychanger.data.local.entity.History
-import com.alxdev.two.moneychanger.data.toCurrencyFormat
+import com.alxdev.two.moneychanger.data.model.CurrencyInformation
+import com.alxdev.two.moneychanger.extension.toCurrencyFormat
 import com.alxdev.two.moneychanger.repo.ChangerRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,7 +41,7 @@ class ChangerViewModel @Inject constructor(
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage = _errorMessage
 
-    val historyChange: LiveData<List<History>?> = changerRepository.getHistoryListLive()
+    val historyChange: LiveData<List<com.alxdev.two.moneychanger.data.model.History>> = changerRepository.historyLiveData
 
     init {
         initTotalMediators()
@@ -73,7 +73,7 @@ class ChangerViewModel @Inject constructor(
         _totalEditText.value = (foreignQuantity * localQuantity).toCurrencyFormat()
     }
 
-    private fun getCurrencyChangeInformation(): CurrencyInformationDTO {
+    private fun getCurrencyChangeInformation(): CurrencyInformation {
         val foreignCurrencyQuantity = foreignSpinnerValueSelected.value?.value ?: 0.0
         val localCurrencyQuantity = localEditText.value.takeUnless {
             it.isNullOrBlank()
@@ -84,7 +84,7 @@ class ChangerViewModel @Inject constructor(
         val foreignCountry =
             foreignSpinnerValueSelected.value?.countryName ?: localCurrencyList[0].countryName
 
-        return CurrencyInformationDTO(
+        return CurrencyInformation(
             localCountry,
             foreignCountry,
             localCurrencyQuantity,

@@ -49,7 +49,6 @@ class AppRetrofit {
             this.addConverterFactory(factory)
         }
             .build()
-
     }
 
     fun getOkHttpClient(status: Mode? = Mode.DISABLED): OkHttpClient {

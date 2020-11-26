@@ -1,42 +1,39 @@
 package com.alxdev.two.moneychanger
 
 import android.app.Application
-import android.content.Context
-import com.alxdev.two.moneychanger.data.local.MoneyChangerDataBase
-import com.alxdev.two.moneychanger.data.remote.Constants
-import com.alxdev.two.moneychanger.data.remote.MockRetrofitController
-import com.alxdev.two.moneychanger.repo.ChangerRepository
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class AppApplication : Application() {
 
-    init {
-        instance = this
-    }
+//    init {
+//        instance = this
+//    }
 
-    companion object {
-        private var instance: AppApplication? = null
-        private fun applicationCon(): Context {
-            return instance!!.applicationContext
-        }
+//    companion object {
+//        private var instance: AppApplication? = null
+//        private fun applicationCon(): Context {
+//            return instance!!.applicationContext
+//        }
 
-        val currencyListRetrofitBuild
-            get() = MockRetrofitController.retrofitBuild(
-                Constants.API.BASE_URL
-            )
+//       val currencyListRetrofitBuild
+//            get() = MockRetrofitController.retrofitBuild(
+//                Constants.API.BASE_URL
+//            )
 
-        val currencyCountryRetrofitBuild
-            get() = MockRetrofitController.retrofitBuild(
-                Constants.API.COUNTRY_BASE_URL
-            )
-
-        val mockRetrofit: MockRetrofitController
-            get() = MockRetrofitController
-
-
-        private val moneyChangerDataBase
-            get() = MoneyChangerDataBase.getInstance(applicationCon())
-
-        val changerRepository
-            get() = ChangerRepository.getInstance(moneyChangerDataBase)
-    }
+//        val currencyCountryRetrofitBuild
+//            get() = MockRetrofitController.retrofitBuild(
+//                Constants.API.COUNTRY_BASE_URL
+//            )
+////
+//        val mockRetrofit: MockRetrofitController
+//            get() = MockRetrofitController
+//
+//
+//        private val moneyChangerDataBase
+//            get() = MoneyChangerDataBase.getInstance(applicationCon())
+//
+//        val changerRepository
+//            get() = ChangerRepository.getInstance(moneyChangerDataBase)
+//    }
 }

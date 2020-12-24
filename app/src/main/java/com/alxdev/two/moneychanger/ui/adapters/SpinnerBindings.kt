@@ -1,4 +1,4 @@
-package com.alxdev.two.moneychanger.adapters
+package com.alxdev.two.moneychanger.ui.adapters
 
 import android.util.Log
 import android.view.View
@@ -8,20 +8,21 @@ import androidx.appcompat.widget.AppCompatSpinner
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
+import com.alxdev.two.moneychanger.Constant
 import com.alxdev.two.moneychanger.R
-import com.alxdev.two.moneychanger.data.local.entity.Currency
+import com.alxdev.two.moneychanger.data.model.Currency
 
 
 @BindingAdapter("currency_values")
 fun setCurrencyValues(appCompatSpinner: AppCompatSpinner, currencyList: List<Currency>?) {
     Log.i("alxx", "${currencyList?.size ?: 0}")
     Log.i("alxx", currencyList?.toString() ?: ":(")
-    val adapter =
+    val adapter: ArrayAdapter<Currency> =
         ArrayAdapter(
             appCompatSpinner.context,
             R.layout.spinner_item,
             currencyList ?: listOf(
-                Currency()
+                Constant.ModelDefault.currencyModel
             )
         )
     adapter.setDropDownViewResource(R.layout.spinner_item)
@@ -51,6 +52,6 @@ fun bindSpinnerData(
 }
 
 @InverseBindingAdapter(attribute = "selectedValue", event = "selectedValueAttrChanged")
-fun getSelectedValue(appCompatSpinner: AppCompatSpinner): Currency? {
+fun getSelectedValue(appCompatSpinner: AppCompatSpinner): Currency {
     return appCompatSpinner.selectedItem as Currency
 }

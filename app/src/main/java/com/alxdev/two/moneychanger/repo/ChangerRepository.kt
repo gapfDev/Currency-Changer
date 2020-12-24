@@ -1,103 +1,135 @@
 package com.alxdev.two.moneychanger.repo
 
 import androidx.lifecycle.LiveData
-import com.alxdev.two.moneychanger.data.local.MoneyChangerDataBase
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.Transformations
+import com.alxdev.two.moneychanger.Constant
+import com.alxdev.two.moneychanger.core.UtilityNetworkWorker
+import com.alxdev.two.moneychanger.core.data.external.CurrencyAPIAction
+import com.alxdev.two.moneychanger.core.data.external.CurrencyCountryAPIAction
+import com.alxdev.two.moneychanger.core.data.local.CurrencyDAOAction
+import com.alxdev.two.moneychanger.core.data.local.HistoryDAOAction
 import com.alxdev.two.moneychanger.data.local.entity.Currency
-import com.alxdev.two.moneychanger.data.local.entity.History
-import com.alxdev.two.moneychanger.data.remote.Constants
-import com.alxdev.two.moneychanger.data.remote.CurrencyAPIService
-import com.alxdev.two.moneychanger.data.remote.CurrencyCountryAPIService
+import com.alxdev.two.moneychanger.data.model.CurrencyInformation
+import com.alxdev.two.moneychanger.data.model.History
 import com.alxdev.two.moneychanger.data.remote.currency.CurrencyDTO
-import com.alxdev.two.moneychanger.ui.changer.CurrencyInformationDTO
-import com.alxdev.two.moneychanger.ui.changer.toCurrency
-import com.alxdev.two.moneychanger.ui.changer.toHistory
-import kotlinx.coroutines.*
-import ru.gildor.coroutines.retrofit.Result
-import ru.gildor.coroutines.retrofit.awaitResult
-import javax.inject.Inject
+import com.alxdev.two.moneychanger.util.extension.toCurrencyEntity
+import com.alxdev.two.moneychanger.util.extension.toHistoryEntity
+import com.alxdev.two.moneychanger.util.extension.toModel
+import com.alxdev.two.moneychanger.util.extension.toModelCurrency
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 
-class ChangerRepository @Inject constructor(
-    private val moneyChangerDataBase: MoneyChangerDataBase,
-    private val currencyClient: CurrencyAPIService,
-    private val currencyCountryClient: CurrencyCountryAPIService,
+class ChangerRepository(
+    private val historyDAOImp: HistoryDAOAction,
+    private val currencyDAOImp: CurrencyDAOAction,
+    private val currencyAPIActionImp: CurrencyAPIAction,
+    private val currencyCountryAPIActionImpl: CurrencyCountryAPIAction,
 ) {
+    private val _mediatorHistory =
+        MediatorLiveData<List<History>>()
+    val historyLiveData: LiveData<List<History>> =
+        _mediatorHistory
 
-    suspend fun syncCurrencyAPI() = withContext(Dispatchers.IO) {
-        when (val result =
-            currencyClient.getCurrencyResult(Constants.Key.ACCESS_KEY).awaitResult()) {
-            is Result.Ok -> {
-                getCurrencyCountryList(result.value)
+    private val _mediatorCurrencyList =
+        MediatorLiveData<List<com.alxdev.two.moneychanger.data.model.Currency>>().apply {
+            value = listOf(Constant.ModelDefault.currencyModel)
+        }
+    val rawCurrencyList: LiveData<List<com.alxdev.two.moneychanger.data.model.Currency>> =
+        _mediatorCurrencyList
+    val currencyList: LiveData<List<com.alxdev.two.moneychanger.data.model.Currency>> =
+        Transformations.map(rawCurrencyList) {
+            val elementList = it
+            return@map if (elementList.isNullOrEmpty()) {
+                listOf(Constant.ModelDefault.currencyModel)
+            } else {
+                elementList
             }
-            is Result.Error -> {
+        }
+
+    init {
+        initMediator()
+    }
+
+    private fun initMediator() {
+        _mediatorHistory.addSource(historyDAOImp.getHistoryByDesc()) { _entityHistoryList ->
+            _entityHistoryList?.takeUnless { _list ->
+                _list.isNullOrEmpty()
+            }?.let { _list ->
+                _mediatorHistory.value = _list.toModel()
             }
-            is Result.Exception -> {
-            }
+        }
+
+        _mediatorCurrencyList.addSource(currencyDAOImp.getAllOrderByAsc()) { _currencyList ->
+            this._mediatorCurrencyList.value = _currencyList?.toModelCurrency()
         }
     }
 
-    private suspend fun saveCurrencyList(currencyList: List<Currency>) =
-        withContext(Dispatchers.IO) {
-            moneyChangerDataBase.currencyDAO.clear()
-            moneyChangerDataBase.currencyDAO.saveCurrencyList(currencyList)
-        }
+    suspend fun saveHistory(currencyInformation: CurrencyInformation) =
+        historyDAOImp.setHistory(currencyInformation.toHistoryEntity())
 
-    suspend fun saveHistory(currencyInformation: CurrencyInformationDTO) =
-        withContext(Dispatchers.IO) {
-            moneyChangerDataBase.historyDao.insert(currencyInformation.toHistory())
-        }
+//    fun getCurrencyListLive(): LiveData<List<com.alxdev.two.moneychanger.data.model.Currency>?> =
+//        currencyDAOImp.getAllOrderByAsc().toModelCurrency()
 
-    fun getCurrencyListLive(): LiveData<List<Currency>?> = runBlocking {
-        withContext(Dispatchers.IO) {
-            moneyChangerDataBase.currencyDAO.getAllLiveData()
+    private suspend fun saveCurrencyCountryList(currency: CurrencyDTO) {
+        getCurrencyCountryList(currency).takeUnless {
+            it.isNullOrEmpty()
+        }?.let { _currencyList ->
+            currencyDAOImp.cleanAndSaveCurrencyList(_currencyList)
         }
     }
 
-    fun getHistoryListLive(): LiveData<List<History>?> {
-        return moneyChangerDataBase.historyDao.getAllLiveData()
-    }
+    private suspend fun getCurrencyCountryList(currency: CurrencyDTO): List<Currency> {
+        val currencyCountryList = mutableListOf<Currency>()
 
-    private suspend fun getCurrencyCountryList(currency: CurrencyDTO) {
-        val handler = CoroutineExceptionHandler { _, exception ->
-            println("Caught $exception")
-        }
+        if (currencyDAOImp.getCount() == 0) {
+            val exceptionHandler = CoroutineExceptionHandler { _, exception ->
+                println("Caught $exception")
+            }
 
-        if (moneyChangerDataBase.currencyDAO.getCount() == 0) {
-            val currencyListFromAPI = mutableListOf<Currency>()
             supervisorScope {
-                currency.quotes.mapKeys {
-                    it.key.replace("USD", "")
-                }.toMap().forEach {
-                    launch(handler) {
-                        currencyCountryInfo(it)?.let {
-                            currencyListFromAPI.add(it)
+                currency.getCurrencyNameMap().forEach { _entry ->
+                    launch(exceptionHandler) {
+                        getCurrencyCountryInfo(_entry)?.let { _currencyCountry ->
+                            currencyCountryList.add(_currencyCountry)
                         }
                     }
                 }
             }
-
-            currencyListFromAPI.takeUnless {
-                it.isNullOrEmpty()
-            }?.let {
-                saveCurrencyList(it)
-            }
-
         }
+        return currencyCountryList
     }
 
-    private suspend fun currencyCountryInfo(quote: Map.Entry<String, Double>): Currency? {
-        return when (val result =
-            currencyCountryClient.getCountryByCurrencyName(quote.key).awaitResult()) {
-            is Result.Ok -> {
-                result.value[0].toCurrency(quote)
-            }
-            is Result.Error -> {
-                null
-            }
-            is Result.Exception -> {
-                null
-            }
+    suspend fun syncCurrencyAPI() {
+        UtilityNetworkWorker.processAPIResult(
+            { currencyAPIActionImp.getCurrencyResult() },
+            { currencyDTO -> saveCurrencyCountryList(currencyDTO) }
+        )
+    }
+
+    private suspend fun getCurrencyCountryInfo(quote: Map.Entry<String, Double>): Currency? {
+        return UtilityNetworkWorker.getResultManagerFromAPIResult {
+            currencyCountryAPIActionImpl.getCountryByCurrencyName(quote.key)
+        }.result?.get(0)?.toCurrencyEntity(quote)
+    }
+
+    private fun getRawDefaultCurrency(): List<com.alxdev.two.moneychanger.data.model.Currency> {
+        return listOf(Constant.ModelDefault.currencyModel)
+    }
+
+    fun getDefaultCurrency(): List<com.alxdev.two.moneychanger.data.model.Currency> {
+        val elementList = getRawDefaultCurrency()
+        return if (elementList.isNullOrEmpty()) {
+            listOf(Constant.ModelDefault.currencyModel)
+        } else {
+            elementList
         }
     }
 }
+
+
+
+
 
 

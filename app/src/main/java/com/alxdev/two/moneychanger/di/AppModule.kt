@@ -1,6 +1,14 @@
 package com.alxdev.two.moneychanger.di
 
 import android.content.Context
+import com.alxdev.two.moneychanger.core.data.external.CurrencyAPIAction
+import com.alxdev.two.moneychanger.core.data.external.CurrencyAPIActionImpl
+import com.alxdev.two.moneychanger.core.data.external.CurrencyCountryAPIAction
+import com.alxdev.two.moneychanger.core.data.external.CurrencyCountryAPIActionImpl
+import com.alxdev.two.moneychanger.core.data.local.CurrencyDAOAction
+import com.alxdev.two.moneychanger.core.data.local.CurrencyDAOImp
+import com.alxdev.two.moneychanger.core.data.local.HistoryDAOAction
+import com.alxdev.two.moneychanger.core.data.local.HistoryDAOImp
 import com.alxdev.two.moneychanger.data.local.MoneyChangerDataBase
 import com.alxdev.two.moneychanger.data.remote.AppRetrofit
 import com.alxdev.two.moneychanger.data.remote.Constants
@@ -10,15 +18,15 @@ import com.alxdev.two.moneychanger.repo.ChangerRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import fr.speekha.httpmocker.Mode
 import okhttp3.OkHttpClient
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 
 object AppModule {
 
@@ -44,25 +52,15 @@ object AppModule {
         return MoneyChangerDataBase.getInstance(context)
     }
 
-    @CurrencyAPI
-    @Singleton
     @Provides
-    fun provideRetrofitCurrencyAPI(@CurrencyOkHttpClient okHttpClient: OkHttpClient): CurrencyAPIService {
-        return AppRetrofit().getAPI(
-            Constants.API.BASE_URL,
-            client = okHttpClient
-        ).create(CurrencyAPIService::class.java)
-    }
+    fun providesHistoryDAO(moneyChangerDB: MoneyChangerDataBase): HistoryDAOAction =
+        HistoryDAOImp(moneyChangerDB)
 
-    @CurrencyCountryAPI
-    @Singleton
     @Provides
-    fun provideRetrofitCurrencyCountryAPI(@CurrencyCountryOkHttpClient okHttpClient: OkHttpClient): CurrencyCountryAPIService {
-        return AppRetrofit().getAPI(
-            Constants.API.COUNTRY_BASE_URL,
-            client = okHttpClient
-        ).create(CurrencyCountryAPIService::class.java)
-    }
+    fun providesCurrencyDAO(moneyChangerDB: MoneyChangerDataBase): CurrencyDAOAction =
+        CurrencyDAOImp(moneyChangerDB)
+
+
 
     @CurrencyOkHttpClient
     @Singleton
@@ -78,16 +76,5 @@ object AppModule {
         return AppRetrofit().getOkHttpClient()
     }
 
-    @Provides
-    fun provideChangerRepository(
-        moneyChangerDB: MoneyChangerDataBase,
-        @CurrencyAPI currencyAPIService: CurrencyAPIService,
-        @CurrencyCountryAPI currencyCountryAPIService: CurrencyCountryAPIService,
-    ): ChangerRepository {
-        return ChangerRepository(
-            moneyChangerDB,
-            currencyAPIService,
-            currencyCountryAPIService
-        )
-    }
+
 }

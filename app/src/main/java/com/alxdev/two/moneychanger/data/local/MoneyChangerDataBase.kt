@@ -41,7 +41,5 @@ abstract class MoneyChangerDataBase : RoomDatabase() {
                 return instance
             }
         }
-
     }
-
 }

@@ -30,8 +30,4 @@ data class Currency(
     companion object {
         const val TABLE_NAME = "currency_info"
     }
-
-    override fun toString(): String {
-        return this.countryName
-    }
 }

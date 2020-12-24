@@ -1,6 +1,6 @@
 package com.alxdev.two.moneychanger.data.remote.currency
 
-import com.alxdev.two.moneychanger.data.local.entity.Currency
+import kotlinx.coroutines.launch
 
 data class CurrencyDTO(
     val privacy: String,
@@ -9,4 +9,11 @@ data class CurrencyDTO(
     val success: Boolean,
     val terms: String,
     val timestamp: Int
-)
+){
+
+    fun getCurrencyNameMap(): Map<String, Double> {
+        return quotes.mapKeys {
+            it.key.replace("USD", "")
+        }
+    }
+}

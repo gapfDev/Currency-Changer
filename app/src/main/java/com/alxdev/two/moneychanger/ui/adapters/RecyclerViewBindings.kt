@@ -1,4 +1,4 @@
-package com.alxdev.two.moneychanger.adapters
+package com.alxdev.two.moneychanger.ui.adapters
 
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView

@@ -3,6 +3,8 @@ package com.alxdev.two.moneychanger.core.data.local
 import androidx.lifecycle.LiveData
 import com.alxdev.two.moneychanger.data.local.MoneyChangerDataBase
 import com.alxdev.two.moneychanger.data.local.entity.History
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class HistoryDAOImp @Inject constructor(
@@ -12,6 +14,8 @@ class HistoryDAOImp @Inject constructor(
         moneyChangerDataBase.historyDao.getAllLiveData()
 
     override suspend fun setHistory(history: History) {
-        moneyChangerDataBase.historyDao.insert(history)
+        withContext(Dispatchers.IO) {
+            moneyChangerDataBase.historyDao.insert(history)
+        }
     }
 }

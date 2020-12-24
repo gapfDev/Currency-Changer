@@ -1,4 +1,4 @@
-package com.alxdev.two.moneychanger.adapters
+package com.alxdev.two.moneychanger.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -13,8 +13,7 @@ import com.alxdev.two.moneychanger.ui.changer.ChangerViewModel
 
 class IRecyclerViewAdapter(private val viewModel: ChangerViewModel) :
     RecyclerView.Adapter<ViewHolder>() {
-    private var items: List<History> =
-        emptyList()
+    private var items: List<History> = listOf()
 
     fun update(items: List<History>) {
         this.items = items

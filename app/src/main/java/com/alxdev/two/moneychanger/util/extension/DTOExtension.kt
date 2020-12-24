@@ -1,4 +1,4 @@
-package com.alxdev.two.moneychanger.extension
+package com.alxdev.two.moneychanger.util.extension
 
 import com.alxdev.two.moneychanger.data.local.entity.Currency
 import com.alxdev.two.moneychanger.data.local.entity.History

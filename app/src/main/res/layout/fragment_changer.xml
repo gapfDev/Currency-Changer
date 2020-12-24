@@ -88,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/mediumMargin"
                 android:layout_marginEnd="@dimen/mediumMargin"
-                app:selectedValue="@={viewModel.localSpinnerValueSelected}"
+                app:selectedValue="@={viewModel._localSpinner}"
                 app:currency_values="@{viewModel.localCurrencyList}"
                 app:layout_constraintEnd_toStartOf="@+id/localEditText"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -104,7 +104,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="numberDecimal"
-                android:text="@={viewModel.localEditText}"
+                android:text="@={viewModel._localEditText}"
                 android:textAlignment="textEnd"
                 app:layout_constraintBottom_toBottomOf="@+id/localSpinner"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -166,7 +166,7 @@
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
                 app:layout_constraintStart_toStartOf="@+id/foreignImageView"
                 app:layout_constraintTop_toBottomOf="@+id/foreignImageView"
-                app:selectedValue="@={viewModel.foreignSpinnerValueSelected}"
+                app:selectedValue="@={viewModel._foreignSpinner}"
                 tools:listitem="@android:layout/simple_spinner_item" />
 
             <androidx.appcompat.widget.AppCompatTextView

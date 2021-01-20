@@ -26,4 +26,7 @@ class CurrencyDAOImp @Inject constructor(
         moneyChangerDataBase.currencyDAO.getAllLiveData()
 
     override suspend fun getCount(): Int = moneyChangerDataBase.currencyDAO.getCount()
+    override suspend fun isCurrencyCountryEmpty(): Boolean {
+        return getCount() == 0
+    }
 }

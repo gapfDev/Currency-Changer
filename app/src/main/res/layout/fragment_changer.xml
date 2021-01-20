@@ -52,7 +52,7 @@
 
             <TextView
                 android:id="@+id/localTextView"
-                style="@style/xl_bold_style"
+                style="@style/large_bold_style"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/local"
@@ -65,7 +65,6 @@
                 android:id="@+id/localImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/mediumMargin"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/localTextView"
                 app:srcCompat="@android:drawable/ic_menu_mylocation" />
@@ -83,23 +82,22 @@
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/localSpinner"
-                style="@style/medium_bold_style"
+                style="@style/small_bold_style"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/mediumMargin"
                 android:layout_marginEnd="@dimen/mediumMargin"
-                app:selectedValue="@={viewModel._localSpinner}"
                 app:currency_values="@{viewModel.localCurrencyList}"
                 app:layout_constraintEnd_toStartOf="@+id/localEditText"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
                 app:layout_constraintStart_toStartOf="@+id/localImageView"
                 app:layout_constraintTop_toBottomOf="@+id/localImageView"
+                app:selectedValue="@={viewModel._localSpinner}"
                 tools:listitem="@android:layout/simple_spinner_item" />
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/localEditText"
-                style="@style/xl_bold_style"
+                style="@style/large_bold_style"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -115,7 +113,7 @@
             android:id="@+id/foreignConstrain"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/mediumMargin"
+            android:layout_marginTop="8dp"
             android:background="@color/colorPrimary"
             android:padding="@dimen/smallPadding"
             app:layout_constraintEnd_toStartOf="@+id/guidelineRigth"
@@ -124,7 +122,7 @@
 
             <TextView
                 android:id="@+id/foreignTextView"
-                style="@style/xl_bold_light_style"
+                style="@style/large_bold_style"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/foreign"
@@ -137,7 +135,6 @@
                 android:id="@+id/foreignImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/mediumMargin"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/foreignTextView"
                 app:srcCompat="@android:drawable/ic_media_ff" />
@@ -155,10 +152,9 @@
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/foreignSpinner"
-                style="@style/medium_bold_light_style"
+                style="@style/small_bold_light_style"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/mediumMargin"
                 android:layout_marginEnd="@dimen/mediumMargin"
                 app:currency_values="@{viewModel.foreignCurrencyList}"
                 app:layout_constraintEnd_toStartOf="@+id/foreignEditText"
@@ -189,7 +185,7 @@
             android:id="@+id/buttonContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/mediumMargin"
+            android:layout_marginTop="8dp"
             android:background="@android:color/white"
             android:padding="@dimen/smallPadding"
             app:layout_constraintEnd_toStartOf="@+id/guidelineRigth"
@@ -200,7 +196,7 @@
                 android:id="@+id/convertButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/mediumMargin"
+                android:layout_marginTop="8dp"
                 android:onClick="@{()-> viewModel.onCLickSaveLaunch()}"
                 android:text="@string/save"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -220,7 +216,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/totalCurrencyTextView"
-                style="@style/xlarge_bold_accent_style"
+                style="@style/large_bold_accent_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.totalEditText}"
@@ -239,18 +235,19 @@
             tools:layout_editor_absoluteY="401dp" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:background="@android:color/white"
             android:id="@+id/historyRecycleView"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
+            android:background="@android:color/white"
+            app:bind_item_data="@{viewModel.historyChange}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guidelineRigth"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
             app:layout_constraintTop_toBottomOf="@+id/currencyContainerBarrier"
-            app:bind_item_data ="@{viewModel.historyChange}"
+            app:layout_constraintVertical_bias="0.0"
             tools:listitem="@layout/item_history" />
 
 

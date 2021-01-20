@@ -5,9 +5,9 @@ import com.alxdev.two.moneychanger.data.local.entity.History
 import com.alxdev.two.moneychanger.data.model.CurrencyInformation
 import com.alxdev.two.moneychanger.data.remote.currencycountry.CurrencyCountryDTO
 
-fun CurrencyCountryDTO.toCurrencyEntity(quote: Map.Entry<String, Double>): Currency? {
+fun CurrencyCountryDTO.toCurrencyEntity(currencyValue: Double): Currency? {
     val currencyName = currencies?.get(0)?.name ?: ""
-    val currencyValue = quote.value
+    val currencyValue = currencyValue
     val currencyShortName = alpha3Code ?: ""
     val currencyCountryName = name ?: ""
     val currencyIconFlag = flag ?: ""

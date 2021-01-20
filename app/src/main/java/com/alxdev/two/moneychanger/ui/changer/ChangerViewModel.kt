@@ -44,11 +44,11 @@ class ChangerViewModel @ViewModelInject constructor(
         get() = changerRepository.getDefaultCurrency()
 
     init {
-        initTotalMediators()
-        initSyncCurrencyLaunch()
+        initMediators()
+        viewModelScope.launch { syncCurrencyLaunch() }
     }
 
-    private fun initTotalMediators() {
+    private fun initMediators() {
         _mediatorSumSpinner.addSource(_foreignSpinner) {
             _mediatorSumSpinner.value = updateTotal()
         }
@@ -58,9 +58,11 @@ class ChangerViewModel @ViewModelInject constructor(
         }
     }
 
-    private fun initSyncCurrencyLaunch() {
-        viewModelScope.launch {
-            changerRepository.syncCurrencyAPI()
+    private suspend fun syncCurrencyLaunch() {
+        changerRepository.callCurrencyAPI { _currencyDTO ->
+            changerRepository.syncCurrencyCountryAPI(
+                _currencyDTO
+            )
         }
     }
 

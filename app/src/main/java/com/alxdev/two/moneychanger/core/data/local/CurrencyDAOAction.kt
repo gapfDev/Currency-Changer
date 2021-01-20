@@ -9,5 +9,6 @@ interface CurrencyDAOAction {
     suspend fun cleanAndSaveCurrencyList(currencyList: List<Currency>)
     fun getAllOrderByAsc(): LiveData<List<Currency>?>
     suspend fun getCount(): Int
+    suspend fun isCurrencyCountryEmpty(): Boolean
 
 }

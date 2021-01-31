@@ -2,95 +2,92 @@ package com.alxdev.two.moneychanger.ui.changer
 
 import android.util.Log
 import android.view.View
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import com.alxdev.two.moneychanger.AppApplication
 import com.alxdev.two.moneychanger.R
-import com.alxdev.two.moneychanger.data.local.entity.Currency
-import com.alxdev.two.moneychanger.data.local.entity.History
-import com.alxdev.two.moneychanger.data.toCurrencyFormat
+import com.alxdev.two.moneychanger.data.model.Currency
+import com.alxdev.two.moneychanger.data.model.CurrencyInformation
+import com.alxdev.two.moneychanger.repo.ChangerRepository
+import com.alxdev.two.moneychanger.util.extension.toCurrencyFormat
 import kotlinx.coroutines.launch
 
-class ChangerViewModel : ViewModel() {
+class ChangerViewModel @ViewModelInject constructor(
+    private val changerRepository: ChangerRepository
+) : ViewModel() {
 
-    private val changerRepository
-        get() = AppApplication.changerRepository
-
-    val localSpinnerValueSelected = MutableLiveData<Currency>()
-    val localCurrencyList: List<Currency>
-        get() = listOf(
-            Currency()
-        )
-    val localEditText = MutableLiveData<String>().apply {
+    val _localSpinner = MutableLiveData<Currency>()
+    val _foreignSpinner = MutableLiveData<Currency>()
+    val _localEditText = MutableLiveData<String>().apply {
         value = "1"
     }
 
-    val foreignSpinnerValueSelected = MutableLiveData<Currency>()
-    val foreignCurrencyList: LiveData<List<Currency>?> = changerRepository.getCurrencyListLive()
     val foreignEditText: LiveData<String>
         get() {
-            return Transformations.map(foreignSpinnerValueSelected) {
+            return Transformations.map(_foreignSpinner) {
                 String.format("%.2f", it?.value ?: 0.0)
             }
         }
 
-    private val totalMediator = MediatorLiveData<String>()
-    private val _totalEditText: MutableLiveData<String>
-        get() = totalMediator
-    val totalEditText: LiveData<String> = _totalEditText
-
     private val _errorMessage = MutableLiveData<String>()
-    val errorMessage = _errorMessage
+    val errorMessage: LiveData<String> = _errorMessage
 
-    val historyChange: LiveData<List<History>?> = changerRepository.getHistoryListLive()
+    private val _mediatorSumSpinner = MediatorLiveData<String>()
+    val totalEditText: LiveData<String> = _mediatorSumSpinner
+
+    val foreignCurrencyList: LiveData<List<Currency>>
+        get() = changerRepository.currencyList
+
+    val historyChange: LiveData<List<com.alxdev.two.moneychanger.data.model.History>>
+        get() = changerRepository.historyLiveData
+
+    val localCurrencyList: List<Currency>
+        get() = changerRepository.getDefaultCurrency()
 
     init {
-        initTotalMediators()
-        initSyncCurrencyLaunch()
+        initMediators()
+        viewModelScope.launch { syncCurrencyLaunch() }
     }
 
-    private fun initTotalMediators() {
-        totalMediator.addSource(foreignSpinnerValueSelected) {
-            updateTotal()
+    private fun initMediators() {
+        _mediatorSumSpinner.addSource(_foreignSpinner) {
+            _mediatorSumSpinner.value = updateTotal()
         }
 
-        totalMediator.addSource(localEditText) {
-            updateTotal()
-        }
-    }
-
-    private fun initSyncCurrencyLaunch() {
-        viewModelScope.launch {
-            changerRepository.syncCurrencyAPI()
+        _mediatorSumSpinner.addSource(_localEditText) {
+            _mediatorSumSpinner.value = updateTotal()
         }
     }
 
-    private fun updateTotal() {
-        val foreignQuantity = foreignSpinnerValueSelected.value?.value ?: 0.0
-        val localQuantity = localEditText.value.takeUnless {
-            it.isNullOrBlank()
-        }?.toDouble() ?: 0.0
-
-        _totalEditText.value = (foreignQuantity * localQuantity).toCurrencyFormat()
+    private suspend fun syncCurrencyLaunch() {
+        changerRepository.callCurrencyAPI { _currencyDTO ->
+            changerRepository.syncCurrencyCountryAPI(
+                _currencyDTO
+            )
+        }
     }
 
-    private fun getCurrencyChangeInformation(): CurrencyInformationDTO {
-        val foreignCurrencyQuantity = foreignSpinnerValueSelected.value?.value ?: 0.0
-        val localCurrencyQuantity = localEditText.value.takeUnless {
-            it.isNullOrBlank()
-        }?.toDouble() ?: 0.0
+    private fun updateTotal(): String {
+        return (getLocalQuantity() * getForeignQuantity()).toCurrencyFormat()
+    }
 
+    private fun getCurrencyChangeInformation(): CurrencyInformation {
         val localCountry =
-            localSpinnerValueSelected.value?.countryName ?: localCurrencyList[0].countryName
+            _localSpinner.value?.countryName ?: localCurrencyList[0].countryName
         val foreignCountry =
-            foreignSpinnerValueSelected.value?.countryName ?: localCurrencyList[0].countryName
+            _foreignSpinner.value?.countryName ?: localCurrencyList[0].countryName
 
-        return CurrencyInformationDTO(
+        return CurrencyInformation(
             localCountry,
             foreignCountry,
-            localCurrencyQuantity,
-            foreignCurrencyQuantity
+            getLocalQuantity(),
+            getForeignQuantity()
         )
     }
+
+    private fun getForeignQuantity(): Double = _foreignSpinner.value?.value ?: 0.0
+    private fun getLocalQuantity(): Double = _localEditText.value.takeUnless {
+        it.isNullOrBlank()
+    }?.toDouble() ?: 0.0
 
     fun onCLickSaveLaunch() {
         viewModelScope.launch {

@@ -1,8 +1,8 @@
-package com.alxdev.two.moneychanger.adapters
+package com.alxdev.two.moneychanger.ui.adapters
 
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.alxdev.two.moneychanger.data.local.entity.History
+import com.alxdev.two.moneychanger.data.model.History
 
 @BindingAdapter("bind_item_data")
 fun setRecycleViewDataItems(recyclerView: RecyclerView, items: List<History>?) {
@@ -11,8 +11,8 @@ fun setRecycleViewDataItems(recyclerView: RecyclerView, items: List<History>?) {
     }?.let { _recycleView ->
         items?.takeIf {
             it.isNotEmpty()
-        }?.let {
-            (_recycleView as IRecyclerViewAdapter).update(it)
+        }?.let { _historyList ->
+            (_recycleView as IRecyclerViewAdapter).update(_historyList)
         }
     }
 }

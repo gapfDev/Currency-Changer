@@ -2,9 +2,7 @@ package com.alxdev.two.moneychanger.data.local.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import com.alxdev.two.moneychanger.data.toCurrencyFormat
 
 @Entity(tableName = History.TABLE_NAME)
 class History(

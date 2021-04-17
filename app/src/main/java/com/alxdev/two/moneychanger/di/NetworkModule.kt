@@ -1,7 +1,7 @@
 package com.alxdev.two.moneychanger.di
 
-import com.alxdev.two.moneychanger.core.data.external.CurrencyAPIAction
-import com.alxdev.two.moneychanger.core.data.external.CurrencyAPIActionImpl
+import com.alxdev.two.moneychanger.core.data.external.CountryAPIAction
+import com.alxdev.two.moneychanger.core.data.external.CountryAPIActionImpl
 import com.alxdev.two.moneychanger.core.data.external.CurrencyCountryAPIAction
 import com.alxdev.two.moneychanger.core.data.external.CurrencyCountryAPIActionImpl
 import com.alxdev.two.moneychanger.data.remote.AppRetrofit
@@ -21,7 +21,15 @@ import javax.inject.Singleton
 
 object NetworkModule {
 
-    @AppModule.CurrencyAPI
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class CurrencyAPI
+
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class CurrencyCountryAPI
+
+    @CurrencyAPI
     @Singleton
     @Provides
     fun provideRetrofitCurrencyAPI(@AppModule.CurrencyOkHttpClient okHttpClient: OkHttpClient): CurrencyAPIService {
@@ -31,7 +39,7 @@ object NetworkModule {
         ).create(CurrencyAPIService::class.java)
     }
 
-    @AppModule.CurrencyCountryAPI
+    @CurrencyCountryAPI
     @Singleton
     @Provides
     fun provideRetrofitCurrencyCountryAPI(@AppModule.CurrencyCountryOkHttpClient okHttpClient: OkHttpClient): CurrencyCountryAPIService {
@@ -43,14 +51,14 @@ object NetworkModule {
 
     @Provides
     fun providesCurrencyAPIAction(
-        @AppModule.CurrencyAPI currencyAPIService: CurrencyAPIService
-    ): CurrencyAPIAction {
-        return CurrencyAPIActionImpl(currencyAPIService)
+        @CurrencyAPI currencyAPIService: CurrencyAPIService
+    ): CountryAPIAction {
+        return CountryAPIActionImpl(currencyAPIService)
     }
 
     @Provides
     fun providesCurrencyCountryAPIAction(
-        @AppModule.CurrencyCountryAPI currencyCountryAPIService: CurrencyCountryAPIService,
+        @CurrencyCountryAPI currencyCountryAPIService: CurrencyCountryAPIService,
     ): CurrencyCountryAPIAction {
         return CurrencyCountryAPIActionImpl(currencyCountryAPIService)
     }

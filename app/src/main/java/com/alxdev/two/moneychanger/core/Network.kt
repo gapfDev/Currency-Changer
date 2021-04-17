@@ -48,12 +48,8 @@ object UtilityNetworkWorker {
                     }
                 }
             }
-            is Result.Error -> {
-
-            }
-            is Result.Exception -> {
-
-            }
+            is Result.Error -> {}
+            is Result.Exception -> {}
         }
     }
 }

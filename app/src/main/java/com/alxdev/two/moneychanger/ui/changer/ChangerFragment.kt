@@ -10,8 +10,6 @@ import androidx.fragment.app.viewModels
 import com.alxdev.two.moneychanger.ui.adapters.IRecyclerViewAdapter
 import com.alxdev.two.moneychanger.databinding.FragmentChangerBinding
 import dagger.hilt.android.AndroidEntryPoint
-
-
 /**
  * A simple [Fragment] subclass.
  */

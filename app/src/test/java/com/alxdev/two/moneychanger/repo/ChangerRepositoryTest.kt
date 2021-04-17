@@ -4,7 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.alxdev.two.moneychanger.CoroutineTestRule
-import com.alxdev.two.moneychanger.core.data.external.CurrencyAPIAction
+import com.alxdev.two.moneychanger.core.data.external.CountryAPIAction
 import com.alxdev.two.moneychanger.core.data.external.CurrencyCountryAPIAction
 import com.alxdev.two.moneychanger.core.data.local.CurrencyDAOAction
 import com.alxdev.two.moneychanger.core.data.local.HistoryDAOAction
@@ -43,7 +43,7 @@ class ChangerRepositoryTest {
     lateinit var currencyDAOAction: CurrencyDAOAction
 
     @Mock
-    lateinit var currencyAPIAction: CurrencyAPIAction
+    lateinit var countryAPIAction: CountryAPIAction
 
     @Mock
     lateinit var currencyCountryAPIAction: CurrencyCountryAPIAction
@@ -56,7 +56,7 @@ class ChangerRepositoryTest {
     private fun initRepo(): ChangerRepository = ChangerRepository(
         historyDAOAction,
         currencyDAOAction,
-        currencyAPIAction,
+        countryAPIAction,
         currencyCountryAPIAction,
     )
 
@@ -103,7 +103,7 @@ class ChangerRepositoryTest {
             .thenReturn(getCurrencyListLiveEmpty())
 
         val repo = initRepo()
-        Assert.assertEquals(0, repo.rawCurrencyList.getOrAwaitValue().size)
+        Assert.assertEquals(0, repo.currencyList.getOrAwaitValue().size)
     }
 
 //    @Test
@@ -112,7 +112,7 @@ class ChangerRepositoryTest {
 //            .thenReturn(getCurrencyListLiveEmpty())
 //
 //        val repo = initRepo()
-//        Assert.assertEquals(0, repo.getRawDefaultCurrency().size)
+//        Assert.assertEquals(0, repo.currencyList.size)
 //    }
 
     @Test

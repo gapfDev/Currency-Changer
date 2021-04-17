@@ -2,16 +2,20 @@ package com.alxdev.two.moneychanger.ui.changer
 
 import android.util.Log
 import android.view.View
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.alxdev.two.moneychanger.R
 import com.alxdev.two.moneychanger.data.model.Currency
 import com.alxdev.two.moneychanger.data.model.CurrencyInformation
 import com.alxdev.two.moneychanger.repo.ChangerRepository
+import com.alxdev.two.moneychanger.util.extension.cleanCurrencyNameMap
+import com.alxdev.two.moneychanger.util.extension.toCurrencyEntity
 import com.alxdev.two.moneychanger.util.extension.toCurrencyFormat
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ChangerViewModel @ViewModelInject constructor(
+@HiltViewModel
+class ChangerViewModel @Inject constructor(
     private val changerRepository: ChangerRepository
 ) : ViewModel() {
 
@@ -24,11 +28,11 @@ class ChangerViewModel @ViewModelInject constructor(
     val foreignEditText: LiveData<String>
         get() {
             return Transformations.map(_foreignSpinner) {
-                String.format("%.2f", it?.value ?: 0.0)
+                it.value.toCurrencyFormat()
             }
         }
 
-    private val _errorMessage = MutableLiveData<String>()
+    private val _errorMessage = MutableLiveData<String>() //TODO(Need to add error message API/DB)
     val errorMessage: LiveData<String> = _errorMessage
 
     private val _mediatorSumSpinner = MediatorLiveData<String>()
@@ -45,7 +49,7 @@ class ChangerViewModel @ViewModelInject constructor(
 
     init {
         initMediators()
-        viewModelScope.launch { syncCurrencyLaunch() }
+        viewModelScope.launch { callCountryAPI() }
     }
 
     private fun initMediators() {
@@ -58,12 +62,21 @@ class ChangerViewModel @ViewModelInject constructor(
         }
     }
 
-    private suspend fun syncCurrencyLaunch() {
-        changerRepository.callCurrencyAPI { _currencyDTO ->
-            changerRepository.syncCurrencyCountryAPI(
-                _currencyDTO
-            )
+    private suspend fun callCountryAPI() {
+        changerRepository.callCountriesAPI { _countryDTO ->
+            syncCurrencyCountryAPI(_countryDTO.cleanCurrencyNameMap())
         }
+    }
+
+    private suspend fun syncCurrencyCountryAPI(countryMap: Map<String, Double>) {
+
+        val currencyList =
+            changerRepository.getCurrencyList(countryMap) { _currencyName, _currencyValue ->
+                changerRepository.getCurrencyCountryAPI(_currencyName)
+                    ?.toCurrencyEntity(_currencyValue)
+            }
+
+        changerRepository.saveCurrencyCountryList(currencyList)
     }
 
     private fun updateTotal(): String {

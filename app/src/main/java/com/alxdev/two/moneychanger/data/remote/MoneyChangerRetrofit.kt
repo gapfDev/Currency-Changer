@@ -1,6 +1,6 @@
 package com.alxdev.two.moneychanger.data.remote
 
-import com.alxdev.two.moneychanger.data.remote.currency.CurrencyDTO
+import com.alxdev.two.moneychanger.data.remote.currency.ContryDTO
 import com.alxdev.two.moneychanger.data.remote.currencycountry.CurrencyCountryDTO
 import fr.speekha.httpmocker.Mode
 import fr.speekha.httpmocker.builder.mockInterceptor
@@ -71,10 +71,10 @@ class AppRetrofit {
 
 interface CurrencyAPIService {
     @GET("live")
-    suspend fun getCurrency(@Query("access_key") accessKey: String): CurrencyDTO
+    suspend fun getCurrency(@Query("access_key") accessKey: String): ContryDTO
 
     @GET("live")
-    fun getCurrencyResult(@Query("access_key") accessKey: String): Call<CurrencyDTO>
+    fun getCurrencyResult(@Query("access_key") accessKey: String): Call<ContryDTO>
 
 
 }

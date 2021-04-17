@@ -1,6 +1,6 @@
 package com.alxdev.two.moneychanger.di
 
-import com.alxdev.two.moneychanger.core.data.external.CurrencyAPIAction
+import com.alxdev.two.moneychanger.core.data.external.CountryAPIAction
 import com.alxdev.two.moneychanger.core.data.external.CurrencyCountryAPIAction
 import com.alxdev.two.moneychanger.core.data.local.CurrencyDAOAction
 import com.alxdev.two.moneychanger.core.data.local.HistoryDAOAction
@@ -18,13 +18,13 @@ object RepoModule {
     fun provideChangerRepository(
         historyDAOAction: HistoryDAOAction,
         currencyDAOAction: CurrencyDAOAction,
-        currencyAPIAction: CurrencyAPIAction,
+        countryAPIAction: CountryAPIAction,
         currencyCountryAPIAction: CurrencyCountryAPIAction,
     ): ChangerRepository {
         return ChangerRepository(
             historyDAOAction,
             currencyDAOAction,
-            currencyAPIAction,
+            countryAPIAction,
             currencyCountryAPIAction,
         )
     }

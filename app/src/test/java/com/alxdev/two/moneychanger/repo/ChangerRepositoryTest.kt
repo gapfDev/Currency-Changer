@@ -1,13 +1,13 @@
-  package com.alxdev.two.moneychanger.repo
+package com.alxdev.two.moneychanger.repo
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.alxdev.two.moneychanger.CoroutineTestRule
-import com.alxdev.two.moneychanger.core.data.external.CountryAPIAction
-import com.alxdev.two.moneychanger.core.data.external.CurrencyCountryAPIAction
-import com.alxdev.two.moneychanger.core.data.local.CurrencyDAOAction
-import com.alxdev.two.moneychanger.core.data.local.HistoryDAOAction
+import com.alxdev.two.moneychanger.core.dataimp.external.CountryAPIAction
+import com.alxdev.two.moneychanger.core.dataimp.external.CurrencyCountryAPIAction
+import com.alxdev.two.moneychanger.core.dataimp.local.CurrencyDAOAction
+import com.alxdev.two.moneychanger.core.dataimp.local.HistoryDAOAction
 import com.alxdev.two.moneychanger.data.local.entity.Currency
 import com.alxdev.two.moneychanger.data.local.entity.History
 import com.alxdev.two.moneychanger.getOrAwaitValue
@@ -76,7 +76,8 @@ class ChangerRepositoryTest {
             .thenReturn(getHistoryListLiveEmpty())
 
         val repo = initRepo()
-        Assert.assertEquals(0, repo.historyLiveData.getOrAwaitValue().size)
+        val list = repo.historyLiveData.getOrAwaitValue()
+        Assert.assertEquals(0, list.size)
     }
 
     @Test
@@ -98,22 +99,15 @@ class ChangerRepositoryTest {
     }
 
     @Test
-    fun `getRawCurrencyListLive WHEN empty THEN return 0`() {
+    fun `getRawCurrencyListLive WHEN empty THEN return 1 Default value USA`() {
         Mockito.`when`(currencyDAOAction.getAllOrderByAsc())
             .thenReturn(getCurrencyListLiveEmpty())
 
         val repo = initRepo()
-        Assert.assertEquals(0, repo.currencyList.getOrAwaitValue().size)
+        val list = repo.currencyList.getOrAwaitValue()
+        Assert.assertEquals(1, list.size)
+        Assert.assertEquals("USA", list[0].shortName)
     }
-
-//    @Test
-//    fun `getRawDefaultCurrency WHEN empty THEN return 0`() {
-//        Mockito.`when`(currencyDAOAction.getAllOrderByAsc())
-//            .thenReturn(getCurrencyListLiveEmpty())
-//
-//        val repo = initRepo()
-//        Assert.assertEquals(0, repo.currencyList.size)
-//    }
 
     @Test
     fun `getDefaultCurrency WHEN empty THEN return 1`() {
@@ -132,22 +126,6 @@ class ChangerRepositoryTest {
         val repo = initRepo()
         Assert.assertEquals("USA", repo.getDefaultCurrency()[0].shortName)
     }
-
-//    @ExperimentalCoroutinesApi
-//    @Test
-//    fun `getResult WHEN THEN`() = runBlockingTest {
-//
-//        Mockito.`when`(currencyAPIAction.getCurrencyResult())
-//            .thenReturn(Result.Ok(mock(), mock()))
-//
-//        val repo = initRepo()
-//        repo.syncCurrencyAPI()
-//
-//        verify(repo.currencyDAOImp, times(1))
-//            .clear()
-//    }
-
-//    Test tools
 
     private fun getHistoryListLive(): LiveData<List<History>?> {
         val singleHistory = History(0, "Local_country", "Foreign_Country", 1.0, 1.0)

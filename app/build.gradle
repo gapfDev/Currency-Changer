@@ -48,8 +48,10 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
     // Coroutines
+    def coroutine_version = "1.4.1"
+    def coroutine_android_version = "1.4.1"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutine_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_android_version"
 
     // Testing
     testImplementation 'junit:junit:4.13.1'
@@ -57,15 +59,17 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
 //    Navigation
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
+    def navigation_version = "2.3.5"
+    implementation "androidx.navigation:navigation-fragment-ktx:$navigation_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$navigation_version"
 
 //    Retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
-    implementation 'fr.speekha.httpmocker:mocker:1.2.0'
+    def retrofit_version = "2.9.0"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.google.code.gson:gson:2.8.6"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.9.0"
+    implementation "fr.speekha.httpmocker:mocker:1.2.0"
     implementation "fr.speekha.httpmocker:gson-adapter:1.1.7"
 
 //    Retrofit ext
@@ -75,25 +79,23 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
     //    Room
+    def room_version = "2.3.0"
     annotationProcessor "androidx.room:room-compiler:$room_version" // For Kotlin use kapt instead of annotationProcessor
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version "
 
     //  hilt
-    implementation "com.google.dagger:hilt-android:2.31.2-alpha"
-    kapt "com.google.dagger:hilt-android-compiler:2.31.2-alpha"
-
-    implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
+    def hilt_version = "2.35"
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     //Test
 
     // testImplementation for pure JVM unit tests
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.0"
 
-    testImplementation "androidx.test.ext:junit:1.1.2"
     testImplementation "androidx.arch.core:core-testing:2.1.0"
 
-    testImplementation 'junit:junit:4.13.1'
     testImplementation "org.robolectric:robolectric:4.4"
     testImplementation "com.squareup.okhttp3:mockwebserver:4.9.0"
 
@@ -106,6 +108,7 @@ dependencies {
 
     testImplementation 'org.json:json:20201115'
 
+    //  Leak Canary (Dev)
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 
 }

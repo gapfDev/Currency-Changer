@@ -25,11 +25,9 @@ class ChangerViewModel @Inject constructor(
         value = "1"
     }
 
-    val foreignEditText: LiveData<String>
-        get() {
-            return Transformations.map(_foreignSpinner) {
-                it.value.toCurrencyFormat()
-            }
+    val foreignEditText: LiveData<String> =
+        Transformations.map(_foreignSpinner) {
+            it.value.toCurrencyFormat()
         }
 
     private val _errorMessage = MutableLiveData<String>() //TODO(Need to add error message API/DB)
@@ -72,7 +70,7 @@ class ChangerViewModel @Inject constructor(
 
         val currencyList =
             changerRepository.getCurrencyList(countryMap) { _currencyName, _currencyValue ->
-                changerRepository.getCurrencyCountryAPI(_currencyName)
+                changerRepository.getCurrencyCountryAPI(_currencyName)?.get(0)
                     ?.toCurrencyEntity(_currencyValue)
             }
 

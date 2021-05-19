@@ -1,10 +1,10 @@
 package com.alxdev.two.moneychanger.di
 
 import android.content.Context
-import com.alxdev.two.moneychanger.core.data.local.CurrencyDAOAction
-import com.alxdev.two.moneychanger.core.data.local.CurrencyDAOImp
-import com.alxdev.two.moneychanger.core.data.local.HistoryDAOAction
-import com.alxdev.two.moneychanger.core.data.local.HistoryDAOImp
+import com.alxdev.two.moneychanger.core.dataimp.local.CurrencyDAOAction
+import com.alxdev.two.moneychanger.core.dataimp.local.CurrencyDAOImp
+import com.alxdev.two.moneychanger.core.dataimp.local.HistoryDAOAction
+import com.alxdev.two.moneychanger.core.dataimp.local.HistoryDAOImp
 import com.alxdev.two.moneychanger.data.local.MoneyChangerDataBase
 import com.alxdev.two.moneychanger.data.remote.AppRetrofit
 import dagger.Module

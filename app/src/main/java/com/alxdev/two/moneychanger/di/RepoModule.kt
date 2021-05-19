@@ -1,9 +1,9 @@
 package com.alxdev.two.moneychanger.di
 
-import com.alxdev.two.moneychanger.core.data.external.CountryAPIAction
-import com.alxdev.two.moneychanger.core.data.external.CurrencyCountryAPIAction
-import com.alxdev.two.moneychanger.core.data.local.CurrencyDAOAction
-import com.alxdev.two.moneychanger.core.data.local.HistoryDAOAction
+import com.alxdev.two.moneychanger.core.dataimp.external.CountryAPIAction
+import com.alxdev.two.moneychanger.core.dataimp.external.CurrencyCountryAPIAction
+import com.alxdev.two.moneychanger.core.dataimp.local.CurrencyDAOAction
+import com.alxdev.two.moneychanger.core.dataimp.local.HistoryDAOAction
 import com.alxdev.two.moneychanger.repo.ChangerRepository
 import dagger.Module
 import dagger.Provides

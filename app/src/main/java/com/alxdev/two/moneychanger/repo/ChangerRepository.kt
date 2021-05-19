@@ -1,13 +1,14 @@
 package com.alxdev.two.moneychanger.repo
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Transformations
 import com.alxdev.two.moneychanger.Constant
 import com.alxdev.two.moneychanger.core.UtilityNetworkWorker
-import com.alxdev.two.moneychanger.core.data.external.CountryAPIAction
-import com.alxdev.two.moneychanger.core.data.external.CurrencyCountryAPIAction
-import com.alxdev.two.moneychanger.core.data.local.CurrencyDAOAction
-import com.alxdev.two.moneychanger.core.data.local.HistoryDAOAction
+import com.alxdev.two.moneychanger.core.dataimp.external.CountryAPIAction
+import com.alxdev.two.moneychanger.core.dataimp.external.CurrencyCountryAPIAction
+import com.alxdev.two.moneychanger.core.dataimp.local.CurrencyDAOAction
+import com.alxdev.two.moneychanger.core.dataimp.local.HistoryDAOAction
 import com.alxdev.two.moneychanger.data.local.entity.Currency
 import com.alxdev.two.moneychanger.data.model.CurrencyInformation
 import com.alxdev.two.moneychanger.data.model.History
@@ -28,12 +29,9 @@ class ChangerRepository(
     private val currencyCountryAPIActionImpl: CurrencyCountryAPIAction,
 ) {
 
-    val historyLiveData: LiveData<List<History>> =
-        Transformations.map(historyDAOImp.getHistoryByDesc()) { _entityHistoryList ->
-            _entityHistoryList?.takeUnless { _list ->
-                _list.isNullOrEmpty()
-            }?.toModel()
-        }
+
+    private val _historyLiveData = MediatorLiveData<List<History>>()
+    val historyLiveData: LiveData<List<History>> = _historyLiveData
 
     val currencyList: LiveData<List<com.alxdev.two.moneychanger.data.model.Currency>> =
         Transformations.map(currencyDAOImp.getAllOrderByAsc()) {
@@ -44,6 +42,16 @@ class ChangerRepository(
                 elementList
             }
         }
+
+    init {
+        _historyLiveData.addSource(historyDAOImp.getHistoryByDesc()) {
+            it?.takeUnless { _list ->
+                _list.isNullOrEmpty()
+            }?.let {
+                _historyLiveData.value = it.toModel()
+            }
+        }
+    }
 
     suspend fun saveHistory(currencyInformation: CurrencyInformation) =
         historyDAOImp.setHistory(currencyInformation.toHistoryEntity())
@@ -68,10 +76,10 @@ class ChangerRepository(
 
     suspend fun getCurrencyCountryAPI(
         currencyName: String
-    ): CurrencyCountryDTO? =
+    ): List<CurrencyCountryDTO>? =
         UtilityNetworkWorker.getResultManagerFromAPIResult {
             currencyCountryAPIActionImpl.getCountryByCurrencyName(currencyName)
-        }.result?.get(0)
+        }.result
 
     suspend fun getCurrencyList(
         countryMap: Map<String, Double>,
@@ -84,9 +92,9 @@ class ChangerRepository(
         }
 
         supervisorScope {
-            countryMap.forEach { _currencyMap ->
+            for ((key, value) in countryMap) {
                 launch(Dispatchers.IO + exceptionHandler) {
-                    action(_currencyMap.key, _currencyMap.value).let { _currencyEntity ->
+                    action(key, value).let { _currencyEntity ->
                         _currencyEntity?.let { currencyCountryList.add(it) }
                     }
                 }

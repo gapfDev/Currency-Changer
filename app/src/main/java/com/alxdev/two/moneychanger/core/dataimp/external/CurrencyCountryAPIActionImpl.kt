@@ -1,4 +1,4 @@
-package com.alxdev.two.moneychanger.core.data.external
+package com.alxdev.two.moneychanger.core.dataimp.external
 
 import com.alxdev.two.moneychanger.data.remote.CurrencyCountryAPIService
 import com.alxdev.two.moneychanger.data.remote.currencycountry.CurrencyCountryDTO

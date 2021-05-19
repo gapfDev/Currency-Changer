@@ -1,9 +1,9 @@
 package com.alxdev.two.moneychanger.di
 
-import com.alxdev.two.moneychanger.core.data.external.CountryAPIAction
-import com.alxdev.two.moneychanger.core.data.external.CountryAPIActionImpl
-import com.alxdev.two.moneychanger.core.data.external.CurrencyCountryAPIAction
-import com.alxdev.two.moneychanger.core.data.external.CurrencyCountryAPIActionImpl
+import com.alxdev.two.moneychanger.core.dataimp.external.CountryAPIAction
+import com.alxdev.two.moneychanger.core.dataimp.external.CountryAPIActionImpl
+import com.alxdev.two.moneychanger.core.dataimp.external.CurrencyCountryAPIAction
+import com.alxdev.two.moneychanger.core.dataimp.external.CurrencyCountryAPIActionImpl
 import com.alxdev.two.moneychanger.data.remote.AppRetrofit
 import com.alxdev.two.moneychanger.data.remote.Constants
 import com.alxdev.two.moneychanger.data.remote.CurrencyAPIService

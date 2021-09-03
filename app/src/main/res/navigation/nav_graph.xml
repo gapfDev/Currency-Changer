@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/changerFragment"
-        android:name="com.alxdev.two.moneychanger.ui.changer.ChangerFragment"
+        android:name="com.alxdev.two.moneychanger.appcomponents.presentation.changer.ChangerFragment"
         android:label="fragment_changer"
         tools:layout="@layout/fragment_changer" />
 </navigation>

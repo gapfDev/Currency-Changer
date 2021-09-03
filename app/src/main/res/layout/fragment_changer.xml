@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.alxdev.two.moneychanger.ui.changer.ChangerViewModel" />
+            type="com.alxdev.two.moneychanger.appcomponents.presentation.changer.ChangerViewModel" />
 
     </data>
 

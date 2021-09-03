@@ -6,11 +6,11 @@
 
         <variable
             name="historyItem"
-            type="com.alxdev.two.moneychanger.data.model.History" />
+            type="com.alxdev.two.moneychanger.domainx.model.History" />
 
         <variable
             name="viewModel"
-            type="com.alxdev.two.moneychanger.ui.changer.ChangerViewModel" />
+            type="com.alxdev.two.moneychanger.appcomponents.presentation.changer.ChangerViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

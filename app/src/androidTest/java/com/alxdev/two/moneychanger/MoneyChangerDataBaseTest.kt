@@ -3,9 +3,9 @@ package com.alxdev.two.moneychanger
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.alxdev.two.moneychanger.data.local.MoneyChangerDataBase
-import com.alxdev.two.moneychanger.data.local.dao.CurrencyDao
-import com.alxdev.two.moneychanger.data.local.entity.Currency
+import com.alxdev.two.moneychanger.datax.datasource.database.MoneyChangerDataBase
+import com.alxdev.two.moneychanger.datax.datasource.database.dao.CurrencyDao
+import com.alxdev.two.moneychanger.datax.datasource.entity.Currency
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -42,7 +42,7 @@ class MoneyChangerDataBaseTest {
     fun insertAndGet() {
         val currency = Currency()
         currencyDAO.insert(currency)
-        val coin: Currency? = currencyDAO.getCurrency()
-        assertEquals(coin?.value, 0.0)
+        val money: Currency? = currencyDAO.getCurrency()
+        assertEquals(money?.value, 0.0)
     }
 }
